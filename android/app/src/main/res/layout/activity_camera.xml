@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white">
+
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/camera_video_view_Rl"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        tools:layout_height="250dp">-->
+
+<!--        <com.tuya.smart.camera.middleware.widget.TuyaCameraView-->
+<!--            android:id="@+id/camera_video_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            tools:layout_height="250dp"-->
+<!--            />-->
+
+<!--&lt;!&ndash;        <Button&ndash;&gt;-->
+<!--&lt;!&ndash;            android:id="@+id/button4"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_width="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_height="wrap_content"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_alignParentEnd="true"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_alignParentBottom="true"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_marginEnd="60dp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_marginBottom="92dp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:text="speak" />&ndash;&gt;-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/camera_mute"-->
+<!--            android:layout_width="@dimen/wh_28"-->
+<!--            android:layout_height="@dimen/wh_28"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            android:layout_marginBottom="215dp"-->
+<!--            android:contentDescription="@string/image_description"-->
+<!--            android:src="@drawable/camera_mute_btn" />-->
+
+<!--        <TextView-->
+<!--            android:id="@+id/camera_quality"-->
+<!--            android:layout_width="40dp"-->
+<!--            android:layout_height="20dp"-->
+<!--            android:layout_alignParentStart="true"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginEnd="295dp"-->
+<!--            android:layout_marginBottom="215dp"-->
+<!--            android:layout_toStartOf="@+id/camera_mute"-->
+<!--            android:layout_toRightOf="@+id/camera_mute"-->
+<!--            android:background="@drawable/camera_shape_wirlesswake"-->
+<!--            android:gravity="center"-->
+<!--            android:text="@string/hd"-->
+<!--            android:textColor="@color/white"-->
+<!--            android:textSize="@dimen/ts_11" />-->
+
+<!--    </RelativeLayout>-->
+
+<!--    <RelativeLayout-->
+<!--        android:id="@+id/camera_control_layout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_below="@+id/camera_video_view_Rl"-->
+<!--        android:background="@color/white"-->
+<!--        android:padding="10dp">-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/camera_mic_btn"-->
+<!--            android:layout_width="90dp"-->
+<!--            android:layout_height="70dp"-->
+<!--            android:contentDescription="@string/image_description"-->
+<!--            android:src="@drawable/camera_icon_mic_selector" />-->
+
+<!--    </RelativeLayout>-->
+
+    <RelativeLayout
+        android:id="@+id/camera_video_view_Rl"
+        android:layout_width="match_parent"
+        android:layout_height="500dp"
+        >
+
+        <com.tuya.smart.camera.middleware.widget.TuyaCameraView
+            android:id="@+id/camera_video_view"
+            android:layout_width="match_parent"
+            android:layout_height="500dp" />
+
+        <TextView
+            android:id="@+id/camera_quality"
+            android:layout_width="@dimen/wh_60"
+            android:layout_height="@dimen/wh_28"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="160dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/camera_shape_wirlesswake"
+            android:gravity="center"
+            android:text="@string/hd"
+            android:textColor="@color/white"
+            android:textSize="@dimen/ts_12" />
+
+        <ImageView
+            android:id="@+id/camera_mute"
+            android:layout_width="@dimen/wh_28"
+            android:layout_height="@dimen/wh_28"
+            android:layout_gravity="center"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="160dp"
+            android:layout_marginEnd="10dp"
+            android:gravity="center"
+            android:src="@drawable/camera_mute_btn" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/camera_video_view_Rl"
+        android:background="@color/white"
+        android:padding="10dp">
+
+        <include
+            android:id="@+id/camera_control_board"
+            layout="@layout/camera_panel_control_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <!--                <ImageView-->
+        <!--                    android:id="@+id/camera_mic_btn"-->
+        <!--                    android:layout_width="90dp"-->
+        <!--                    android:layout_height="70dp"-->
+        <!--                    android:contentDescription="@string/image_description"-->
+        <!--                    android:src="@drawable/camera_icon_mic_selector" />-->
+
+    </ScrollView>
+
+
+</RelativeLayout>

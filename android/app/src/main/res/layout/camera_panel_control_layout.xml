@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/camera_mic_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_mic_selector" />
+
+        <ImageView
+            android:id="@+id/camera_photo_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_photo_selector" />
+
+        <ImageView
+            android:id="@+id/camera_record_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_record_selector" />
+
+        <ImageView
+            android:id="@+id/camera_setting_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_setting" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/camera_replay_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_playback_selector" />
+
+        <ImageView
+            android:id="@+id/camera_cloud_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_cloud" />
+
+        <ImageView
+            android:id="@+id/camera_message_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_message" />
+
+        <ImageView
+            android:id="@+id/camera_clarity_btn"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/image_description"
+            android:src="@drawable/camera_icon_hd" />
+
+    </LinearLayout>
+
+</LinearLayout>
