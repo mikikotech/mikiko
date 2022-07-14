@@ -145,8 +145,8 @@ const BottomTabsNavigator = ({navigation}: navBar) => {
 
   // console.log(dataPhoto);
 
-  if (!isLogin)
-    return <Loader loading={true} opacity={0.6} color={PRIMARY_COLOR} />;
+  if (isLogin == false)
+    return <Loader loading={!isLogin} opacity={0.6} color={PRIMARY_COLOR} />;
 
   return (
     <Tab.Navigator tabBar={props => <MyTabBar {...props} />}>

@@ -62,12 +62,14 @@ const ProfileScreen = ({navigation}: Nav) => {
             </Avatar>
             <VStack>
               <Text color={'black'}>
-                {state.auth.displayName != null ? state.auth.displayName : ''}
+                {state?.auth?.displayName != null
+                  ? state?.auth?.displayName
+                  : ''}
               </Text>
               <Text color={'black'}>
-                {state.auth.email != null
-                  ? state.auth.email
-                  : state.auth.phoneNumber}
+                {state?.auth?.email != null
+                  ? state?.auth?.email
+                  : state?.auth?.phoneNumber}
               </Text>
             </VStack>
           </HStack>

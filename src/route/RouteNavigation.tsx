@@ -20,6 +20,8 @@ import {LogBox} from 'react-native';
 import AuthStackNavigation from '../navigation/AuthStackNavigation';
 import PushNotification, {Importance} from 'react-native-push-notification';
 import theme from '../utils/theme';
+import TuyaUser from '../lib/TuyaUser';
+import AndroidToast from '../utils/AndroidToast';
 
 const Stack = createStackNavigator();
 
@@ -151,6 +153,26 @@ const RouteNavigation = () => {
     }
   };
 
+  const isUserLogin = async () => {
+    await TuyaUser.isLogin().then(res => {
+      if (res == true) {
+        auth().onAuthStateChanged(res => {
+          console.log('user login = ', res);
+          // if (
+          //   res?.emailVerified ||
+          //   res?.email != null ||
+          //   (res?.phoneNumber !== null && res?.displayName != null)
+          // ) {
+          // }
+          dispatch({type: ActionType.LOGIN, payload: res});
+        });
+      } else {
+        dispatch({type: ActionType.LOGOUT});
+        AndroidToast.toast('user login expired');
+      }
+    });
+  };
+
   useEffect(() => {
     getThemeValue();
 
@@ -164,17 +186,22 @@ const RouteNavigation = () => {
   }, []);
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(res => {
-      console.log('user login = ', res);
-      if (
-        res?.emailVerified ||
-        res?.email != null ||
-        (res?.phoneNumber !== null && res?.displayName != null)
-      ) {
-        dispatch({type: ActionType.LOGIN, payload: res});
-      }
-    });
-    return subscriber;
+    // const subscriber = auth().onAuthStateChanged(res => {
+    //   console.log('user login = ', res);
+    //   if (
+    //     res?.emailVerified ||
+    //     res?.email != null ||
+    //     (res?.phoneNumber !== null && res?.displayName != null)
+    //   ) {
+    //     dispatch({type: ActionType.LOGIN, payload: res});
+    //   }
+    // });
+
+    isUserLogin();
+
+    return () => {
+      true;
+    };
   }, []);
 
   const config = {

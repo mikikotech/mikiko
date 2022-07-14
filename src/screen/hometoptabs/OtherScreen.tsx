@@ -46,7 +46,7 @@ const OtherScreen = ({navigation}: Nav) => {
 
   const [deviceList, deviceListSet] = useState<Array<deviceList>>([]);
   const [status, statusSet] = useState<boolean>(true);
-  const [deviceBean, setDeviceBean] = useState<Array<any>>();
+  const [deviceBean, setDeviceBean] = useState<Array<any>>([]);
 
   LogBox.ignoreAllLogs();
 
@@ -58,26 +58,28 @@ const OtherScreen = ({navigation}: Nav) => {
     TuyaUser.isLogin().then(res => {
       if (res == true) {
         TuyaHome.queryHomeDetail(state.homeInfo[0]?.homeId).then((res: any) => {
-          // console.log(' other screen ', res.deviceList[0]);
+          console.log(' other screen ', res.deviceList);
           setDeviceBean(res?.deviceList);
         });
       }
     });
 
-    firestore()
-      .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
-      .onSnapshot(res => {
-        if (res.size == 0) {
-          deviceListSet([]);
-        } else {
-          var devices: any = [];
-          res.forEach((device: any) => {
-            devices.push(device._data);
-          });
-          deviceListSet(devices);
-        }
-      });
+    // firestore()
+    //   .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+    //   .onSnapshot(res => {
+    //     if (res.size == 0) {
+    //       deviceListSet([]);
+    //     } else {
+    //       var devices: any = [];
+    //       res.forEach((device: any) => {
+    //         devices.push(device._data);
+    //       });
+    //       deviceListSet(devices);
+    //     }
+    //   });
   }, [navigation]);
+
+  console.log('device bean =============', deviceBean.length);
 
   const requestPermission = async () => {
     await PermissionsAndroid.request(
@@ -199,6 +201,34 @@ const OtherScreen = ({navigation}: Nav) => {
           );
         }}
       />
+      {deviceBean.length == 0 ? (
+        <VStack
+          justifyContent={'center'}
+          position="absolute"
+          top={ITEM_HEIGHT_H1 / 2}
+          left="37%"
+          alignItems="center"
+          space={3}>
+          <Text
+            _light={{color: FONT_ACTIVE_LIGHT}}
+            _dark={{color: FONT_INACTIVE_DARK}}
+            fontSize={FONT_TITLE}>
+            No Device Yet
+          </Text>
+          <Button
+            variant={'unstyled'}
+            width={ITEM_WIDTH_H4 * 1.3}
+            height={TAB_BAR_HEIGHT}
+            onPress={() => {
+              navigation.navigate('Pairingbase');
+            }}
+            rounded="none"
+            bg={PRIMARY_COLOR}
+            _text={{color: FONT_INACTIVE_LIGHT, mt: -0.5}}>
+            ADD
+          </Button>
+        </VStack>
+      ) : null}
     </Box>
   );
 };
