@@ -143,7 +143,38 @@ const StaggerView = ({
         message="Are you sure delete this device ?"
         onPress={async () => {
           if (shared) {
-            RemoveDevice(id);
+            // RemoveDevice(id);
+
+            try {
+              firestore()
+                .collection('users')
+                .doc(
+                  state.auth.email !== null ? state.auth.email : state.auth.uid,
+                )
+                .get()
+                .then((res: any) => {
+                  var devId: Array<string>;
+
+                  res._data.shared.map((resp, index) => {
+                    if (resp[index] != id) {
+                      devId.push(resp[index]);
+                    }
+                  });
+
+                  try {
+                    firestore()
+                      .collection('users')
+                      .doc(
+                        state.auth.email !== null
+                          ? state.auth.email
+                          : state.auth.uid,
+                      )
+                      .update({
+                        shared: devId,
+                      });
+                  } catch (error) {}
+                });
+            } catch (error) {}
           } else {
             firestore()
               .collection(

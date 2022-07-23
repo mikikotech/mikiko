@@ -285,11 +285,12 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
                 navigation.navigate('Bottomtabsbase');
               } else {
                 firestore()
-                  .collection(
-                    state.auth.email !== null
-                      ? state.auth.email
-                      : state.auth.uid,
-                  )
+                  // .collection(
+                  //   state.auth.email !== null
+                  //     ? state.auth.email
+                  //     : state.auth.uid,
+                  // )
+                  .collection('devices') //change firestore strucktur
                   .doc(bssid)
                   .set({
                     gardenName: deviceName,
@@ -299,6 +300,10 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
                     model: mode,
                     actions: [],
                     schedule: [],
+                    devOwner:
+                      state.auth.email !== null
+                        ? state.auth.email
+                        : state.auth.uid,
                     switchName:
                       mode == '5CH'
                         ? [

@@ -32,51 +32,48 @@ import {
   TAB_BAR_HEIGHT,
 } from '../../utils/constanta';
 import {deviceList} from './GreenHouseScreen';
-import {LogBox, PermissionsAndroid} from 'react-native';
+import {
+  LogBox,
+  NativeEventEmitter,
+  NativeModules,
+  PermissionsAndroid,
+} from 'react-native';
 import TuyaHome from '../../lib/TuyaHome';
 import TuyaCamera from '../../lib/TuyaCamera';
 import TuyaUser from '../../lib/TuyaUser';
 import TuyaStagger from '../../components/TuyaStagger';
 
+const eventEmitter = new NativeEventEmitter(NativeModules.TuyaHomeModule);
+
 type Nav = StackScreenProps<HomeStackParams>;
 
 const OtherScreen = ({navigation}: Nav) => {
-  // const {Publish, Subscribe} = useContext(AuthContex);
   const state = useSelector((state: ReducerRootState) => state);
-
-  const [deviceList, deviceListSet] = useState<Array<deviceList>>([]);
-  const [status, statusSet] = useState<boolean>(true);
   const [deviceBean, setDeviceBean] = useState<Array<any>>([]);
 
   LogBox.ignoreAllLogs();
 
-  // console.log(' other screen ', state.homeInfo);
+  const getHomeDetails = async () => {
+    await TuyaUser.isLogin().then(async res => {
+      if (res == true) {
+        await TuyaHome.queryHomeDetail(state.homeInfo[0]?.homeId).then(
+          (res: any) => {
+            console.log(' other screen ', res?.deviceList[0]?.name);
+            setDeviceBean(res?.deviceList);
+          },
+        );
+      }
+    });
+  };
 
   useLayoutEffect(() => {
     // setDeviceBean
 
-    TuyaUser.isLogin().then(res => {
-      if (res == true) {
-        TuyaHome.queryHomeDetail(state.homeInfo[0]?.homeId).then((res: any) => {
-          console.log(' other screen ', res.deviceList);
-          setDeviceBean(res?.deviceList);
-        });
-      }
-    });
+    if (state.homeInfo[0]?.homeId != null) {
+      TuyaHome.TuyaHomeStatusListener(state.homeInfo[0]?.homeId);
+    }
 
-    // firestore()
-    //   .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
-    //   .onSnapshot(res => {
-    //     if (res.size == 0) {
-    //       deviceListSet([]);
-    //     } else {
-    //       var devices: any = [];
-    //       res.forEach((device: any) => {
-    //         devices.push(device._data);
-    //       });
-    //       deviceListSet(devices);
-    //     }
-    //   });
+    getHomeDetails();
   }, [navigation]);
 
   console.log('device bean =============', deviceBean.length);
@@ -98,7 +95,22 @@ const OtherScreen = ({navigation}: Nav) => {
   };
 
   useEffect(() => {
+    const homelistener = eventEmitter.addListener(
+      'homestatus',
+      res => {
+        console.log(res);
+
+        // if (res?.status == 'add' || res?.status == 'remove') {
+
+        // }
+        getHomeDetails();
+      },
+      [],
+    );
+
     requestPermission();
+
+    return () => homelistener.remove();
   }, []);
 
   return (
@@ -194,7 +206,7 @@ const OtherScreen = ({navigation}: Nav) => {
                   <TuyaStagger devId={item.devId} />
                 </HStack>
                 <Text mt={2} color={FONT_ACTIVE_DARK}>
-                  Static Camera Outdor
+                  {item?.name}
                 </Text>
               </VStack>
             </Pressable>

@@ -1,21 +1,16 @@
 import React, {useContext, useEffect, useLayoutEffect, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import ProfileScreen from './../screen/profilescreen/ProfileScreen';
 import {Box, Icon, Image, Text, VStack} from 'native-base';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from './HomeStackNavigation';
 import {
-  BG_LIGHT,
-  FONT_SUB,
-  FONT_TITLE,
   ITEM_HEIGHT_H3,
   PRIMARY_COLOR,
   TAB_BAR_HEIGHT,
 } from '../utils/constanta';
 import PairingNavigation from './PairingNavigation';
 import Carousel from 'react-native-snap-carousel';
-import {dummyData} from '../assets/Dataimage/Data';
 import {Dimensions, LogBox} from 'react-native';
 import SceneTopTabNavigator from './SceneTopTabNavigator';
 import ProfileStackScreen from './ProfileStackNavigation';
@@ -132,6 +127,8 @@ const BottomTabsNavigator = ({navigation}: navBar) => {
         }
 
         console.log('photo database = ', dataArray);
+
+        // deviceList();
 
         tuyaUser();
 

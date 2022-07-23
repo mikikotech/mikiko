@@ -21,14 +21,13 @@ const FailedScreen = () => {
           Failed Setting Up New Device
         </Text>
         <Text _dark={{color: FONT_INACTIVE_DARK}} fontSize={FONT_DESC}>
-          1. Lorem ipsum dolor sit amet.
+          1. Check if device is ready to pair.
         </Text>
         <Text _dark={{color: FONT_INACTIVE_DARK}} fontSize={FONT_DESC}>
-          2. Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          2. Make sure your phone connect to WiFi network.
         </Text>
         <Text _dark={{color: FONT_INACTIVE_DARK}} fontSize={FONT_DESC}>
-          3. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Minima
-          vitae blanditiis vero eos atque!
+          3. Check your WiFi configuration and make sure you choose 2.4GHz WiFi.
         </Text>
       </VStack>
     </Box>

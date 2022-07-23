@@ -1,16 +1,20 @@
 package com.mikiko;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.api.ITuyaHomeChangeListener;
+import com.tuya.smart.home.sdk.api.ITuyaHomeStatusListener;
 import com.tuya.smart.home.sdk.bean.HomeBean;
 import com.tuya.smart.home.sdk.bean.WeatherBean;
 import com.tuya.smart.home.sdk.callback.IIGetHomeWetherSketchCallBack;
@@ -31,16 +35,22 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
         super(reactContext);
     }
 
-//    String[] rooms = {"On Farm", "Green House", "Other"};
-//    ArrayList<String> roomList;
-
     private ITuyaHomeChangeListener mITuyaHomeChangeListener;
     private ITuyaSearchDeviceListener mITuyaSearchDeviceListener;
+    private ITuyaHomeStatusListener iTuyaHomeStatusListener;
 
     @NonNull
     @Override
     public String getName(){
         return "TuyaHomeModule";
+    }
+
+    private void sendEvent(ReactContext reactContext,
+                           String eventName,
+                           @Nullable WritableMap params) {
+        reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit(eventName, params);
     }
 
     @ReactMethod
@@ -122,6 +132,8 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
                 map.putDouble("homeId", homeId);
                 map.putString("type", "onHomeAdded");
 //                BridgeUtils.homeChange(getReactApplicationContext(), map, "");
+
+                sendEvent( getReactApplicationContext(),"home", map);
             }
 
             @Override
@@ -131,6 +143,7 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
                 map.putString("homeName", homeName);
                 map.putString("type", "onHomeInvite");
 //                BridgeUtils.homeChange(getReactApplicationContext(), map, "");
+                sendEvent( getReactApplicationContext(),"home", map);
             }
 
             @Override
@@ -139,6 +152,7 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
                 map.putDouble("homeId", homeId);
                 map.putString("type", "onHomeRemoved");
 //                BridgeUtils.homeChange(getReactApplicationContext(), map, "");
+                sendEvent( getReactApplicationContext(),"home", map);
             }
 
             @Override
@@ -147,6 +161,7 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
                 map.putDouble("homeId", homeId);
                 map.putString("type", "onHomeInfoChanged");
 //                BridgeUtils.homeChange(getReactApplicationContext(), map, "");
+                sendEvent( getReactApplicationContext(),"home", map);
             }
 
             @Override
@@ -155,6 +170,7 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
                 map.putArray("sharedDeviceList", ReactUtils.parseToWritableArray(JsonUtils.toJsonArray(sharedDeviceList)));
                 map.putString("type", "onSharedDeviceList");
 //                BridgeUtils.homeChange(getReactApplicationContext(), map, "");
+                sendEvent( getReactApplicationContext(),"home", map);
             }
 
             @Override
@@ -163,6 +179,7 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
                 map.putArray("sharedGroupList", ReactUtils.parseToWritableArray(JsonUtils.toJsonArray(sharedGroupList)));
                 map.putString("type", "onSharedGroupList");
 //                BridgeUtils.homeChange(getReactApplicationContext(), map, "");
+                sendEvent( getReactApplicationContext(),"home", map);
             }
 
             @Override
@@ -170,9 +187,62 @@ public class TuyaHomeModule extends ReactContextBaseJavaModule {
                 WritableMap map = Arguments.createMap();
                 map.putString("type", "onServerConnectSuccess");
 //                BridgeUtils.homeChange(getReactApplicationContext(), map, "");
+                sendEvent( getReactApplicationContext(),"home", map);
             }
         };
         TuyaHomeSdk.getHomeManagerInstance().registerTuyaHomeChangeListener(mITuyaHomeChangeListener);
+    }
+
+    @ReactMethod
+    public void TuyaHomeStatusListener(final int homeId){
+        iTuyaHomeStatusListener = new ITuyaHomeStatusListener() {
+            @Override
+            public void onDeviceAdded(String devId) {
+                WritableMap map = Arguments.createMap();
+                map.putString("devId", devId);
+                map.putString("status", "add");
+                sendEvent(getReactApplicationContext(), "homestatus", map);
+            }
+
+            @Override
+            public void onDeviceRemoved(String devId) {
+                WritableMap map = Arguments.createMap();
+                map.putString("devId", devId);
+                map.putString("status", "remove");
+                sendEvent(getReactApplicationContext(), "homestatus", map);
+            }
+
+            @Override
+            public void onGroupAdded(long groupId) {
+                WritableMap map = Arguments.createMap();
+                map.putDouble("devId", groupId);
+                map.putString("status", "groupadd");
+                sendEvent(getReactApplicationContext(), "homestatus", map);
+            }
+
+            @Override
+            public void onGroupRemoved(long groupId) {
+                WritableMap map = Arguments.createMap();
+                map.putDouble("devId", groupId);
+                map.putString("status", "groupremove");
+                sendEvent(getReactApplicationContext(), "homestatus", map);
+            }
+
+            @Override
+            public void onMeshAdded(String meshId) {
+                WritableMap map = Arguments.createMap();
+                map.putString("devId", meshId);
+                map.putString("status", "meshadd");
+                sendEvent(getReactApplicationContext(), "homestatus", map);
+            }
+        };
+
+        TuyaHomeSdk.newHomeInstance(homeId).registerHomeStatusListener(iTuyaHomeStatusListener);
+    }
+
+    @ReactMethod
+    public void TuyaHomeStatusUnListener(final int homeId){
+        TuyaHomeSdk.newHomeInstance(homeId).unRegisterHomeStatusListener(iTuyaHomeStatusListener);
     }
 
     @ReactMethod

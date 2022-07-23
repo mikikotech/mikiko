@@ -38,6 +38,28 @@ const OnFarmScreen = ({navigation}: Nav) => {
 
   LogBox.ignoreAllLogs();
 
+  // useLayoutEffect(() => {
+  //     const subscribe = firestore()
+  //       .collection('devices')
+  //       .where(
+  //         'devOwner',
+  //         '==',
+  //         state.auth.email !== null ? state.auth.email : state.auth.uid,
+  //       )
+  //       .where('scene', '==', 'onFarm')
+  //       .onSnapshot((querySnapshot : any) => {
+  //         console.log('filter query ===================', querySnapshot.docs);
+
+  //         if(querySnapshot.size == 0){
+  //           deviceListSet([])
+  //         }else{
+  //           deviceListSet(querySnapshot.docs);
+  //         }
+  //       });
+  //     // .catch(e => {});
+  //  return () => subscribe()
+  // }, []);
+
   useLayoutEffect(() => {
     firestore()
       .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)

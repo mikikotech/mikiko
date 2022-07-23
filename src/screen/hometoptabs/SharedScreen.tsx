@@ -16,7 +16,6 @@ import {
   TAB_BAR_HEIGHT,
 } from '../../utils/constanta';
 import DeviceList from '../../components/DeviceList';
-import SplashScreen from 'react-native-splash-screen';
 import firestore from '@react-native-firebase/firestore';
 import {StackScreenProps} from '@react-navigation/stack';
 import {deviceList} from './GreenHouseScreen';
@@ -27,35 +26,58 @@ const SharedScreen = ({navigation}: Nav) => {
 
   const {RemoveDevice} = useContext(AuthContex);
 
-  const [check, setCheck] = useState<boolean>(true);
-  const [deviceList, deviceListSet] = useState<Array<deviceList>>([]);
+  const [deviceList, deviceListSet] = useState<Array<any>>([]);
 
   useLayoutEffect(() => {
-    if (check) {
-      state.device.map((res: AuthContexDeviceArray) => {
-        firestore()
-          .collection(res.user)
-          .doc(res.id)
-          .get()
-          .then(device => {
-            // return {...device.data(), scene : 'shared'}
+    const subscribe = firestore()
+      .collection('users')
+      .doc(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      .onSnapshot((resp: any) => {
+        console.log(resp._data.shared);
 
-            if (device.exists) {
-              var dev: any = device.data();
+        if (resp._data.shared.length == 0) {
+          deviceListSet([]);
+        } else {
+          try {
+            firestore()
+              .collection('devices')
+              .where('id', 'in', resp._data.shared)
+              .onSnapshot(querySnapshot => {
+                // console.log(
+                //   'filter query ===================',
+                //   querySnapshot.docs,
+                // );
 
-              console.log(dev);
+                if (querySnapshot.size != resp._data?.shared.length) {
+                  var devId = [];
 
-              deviceListSet([...deviceList, dev]);
+                  querySnapshot.docs.map((res: any) => {
+                    console.log('map query ==============', res._data);
 
-              // deviceArray.push(dev);
-            } else {
-              RemoveDevice(res.id);
-            }
-          });
+                    devId.push(res._data.id);
+
+                    try {
+                      firestore()
+                        .collection('users')
+                        .doc(
+                          state.auth.email !== null
+                            ? state.auth.email
+                            : state.auth.uid,
+                        )
+                        .update({
+                          shared: devId,
+                        });
+                    } catch (error) {}
+                  });
+                } else {
+                  deviceListSet(querySnapshot.docs);
+                }
+              });
+          } catch (error) {}
+        }
       });
 
-      setCheck(false);
-    }
+    return () => subscribe();
   }, []);
 
   return (
@@ -65,21 +87,29 @@ const SharedScreen = ({navigation}: Nav) => {
       _light={{bg: BG_LIGHT}}
       _dark={{bg: BG_DARK}}
       px={3}>
-      {deviceList[0] != undefined ? (
+      {deviceList.length > 0 ? (
         <FlatList
           data={deviceList}
           renderItem={item => {
+            console.log(item.item);
+
             return (
-              <DeviceList
-                gardenName={item?.item?.gardenName}
-                id={item?.item?.id}
-                location={item?.item?.location}
-                shared={true}
-                scene={item?.item?.scene}
-                model={item?.item?.model}
-                switchName={item?.item?.switchName}
-              />
+              <Box>
+                <Text>{item.item?._data?.gardenName}</Text>
+              </Box>
             );
+
+            // return (
+            //   <DeviceList
+            //     gardenName={item?.item?._data?.gardenName}
+            //     id={item?.item?._data?.id}
+            //     location={item?.item?._data?.location}
+            //     shared={true}
+            //     scene={item?.item?._data?.scene}
+            //     model={item?.item?._data?.model}
+            //     switchName={item?.item?._data?.switchName}
+            //   />
+            // );
           }}
         />
       ) : (
@@ -110,6 +140,55 @@ const SharedScreen = ({navigation}: Nav) => {
           </Button>
         </VStack>
       )}
+
+      {/* <Button
+        onPress={() => {
+          firestore()
+            .collection('users')
+            .doc(state.auth.email !== null ? state.auth.email : state.auth.uid)
+            .get()
+            .then((resp: any) => {
+              if (resp._data.shared.length == 0) {
+                try {
+                  firestore()
+                    .collection('users')
+                    .doc(
+                      state.auth.email !== null
+                        ? state.auth.email
+                        : state.auth.uid,
+                    )
+                    .update({
+                      shared: ['aaaaaaaa'],
+                    })
+                    .then(() => {
+                      navigation.navigate('Bottomtabsbase');
+                    });
+                } catch (error) {}
+              } else {
+                var devId: Array<string> = resp._data.shared;
+
+                devId.push('bbbbbbbb');
+
+                try {
+                  firestore()
+                    .collection('users')
+                    .doc(
+                      state.auth.email !== null
+                        ? state.auth.email
+                        : state.auth.uid,
+                    )
+                    .update({
+                      shared: devId,
+                    })
+                    .then(() => {
+                      // navigation.navigate('Bottomtabsbase');
+                    });
+                } catch (error) {}
+              }
+            });
+        }}>
+        update
+      </Button> */}
     </Box>
   );
 };

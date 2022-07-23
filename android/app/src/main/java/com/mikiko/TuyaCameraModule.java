@@ -27,6 +27,7 @@ import com.tuya.smart.android.camera.sdk.TuyaIPCSdk;
 import com.tuya.smart.android.camera.sdk.api.ITuyaIPCCore;
 import com.tuya.smart.camera.camerasdk.typlayer.callback.AbsP2pCameraListener;
 import com.tuya.smart.camera.middleware.p2p.ITuyaSmartCameraP2P;
+import com.tuya.smart.camera.middleware.widget.TuyaCameraView;
 import com.tuya.smart.home.sdk.TuyaHomeSdk;
 import com.tuya.smart.home.sdk.builder.TuyaCameraActivatorBuilder;
 import com.tuya.smart.sdk.api.ITuyaActivatorGetToken;
@@ -133,14 +134,14 @@ public class TuyaCameraModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void createCameraP2P(final String devId, Promise promise){
+    public void createCameraP2P(final String devId, Object o, Promise promise){
+
         ITuyaIPCCore cameraInstance = TuyaIPCSdk.getCameraInstance();
         if (cameraInstance != null) {
             cameraInstance.createCameraP2P(devId);
-            promise.resolve(ReactUtils.parseToWritableMap(cameraInstance.createCameraP2P(devId)));
-        }else {
-            promise.reject("error", "no camera instance");
         }
+
+        mCameraP2P.generateCameraView(o);
     }
 
     @ReactMethod
@@ -150,6 +151,8 @@ public class TuyaCameraModule extends ReactContextBaseJavaModule {
         if (cameraInstance != null) {
             mCameraP2P = cameraInstance.createCameraP2P(devId);
         }
+
+        mCameraP2P.isConnecting();
 
         mCameraP2P.registerP2PCameraListener(new AbsP2pCameraListener() {
             @Override
@@ -170,28 +173,6 @@ public class TuyaCameraModule extends ReactContextBaseJavaModule {
             @Override
             public void onReceiveFrameYUVData(int sessionId, ByteBuffer y, ByteBuffer u, ByteBuffer v, int width, int height, int nFrameRate, int nIsKeyFrame, long timestamp, long nProgress, long nDuration, Object camera) {
                 super.onReceiveFrameYUVData(sessionId, y, u, v, width, height, nFrameRate, nIsKeyFrame, timestamp, nProgress, nDuration, camera);
-
-//                ByteBuffer ib = ByteBuffer.allocate((height * width) * 2);
-//
-//                ib.put(y);
-//                ib.put(u);
-//                ib.put(v);
-
-//                byte[] yuvStream = new byte[y.capacity() + u.capacity() + v.capacity()];
-//                ByteArrayOutputStream out = new ByteArrayOutputStream();
-//                YuvImage yuvImage = new YuvImage(ib.array(), ImageFormat.NV21, width, height, null);
-//                yuvImage.compressToJpeg(new Rect(0, 0, width, height), 50, out);
-//                byte[] imageBytes = out.toByteArray();
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-//
-//                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-//
-//                String base64Image = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
-//
-//                promise.resolve(base64Image);
-//
-//                sendEvent(getReactApplicationContext(), "streamData", ReactUtils.parseToWritableMap(base64Image));
             }
 
             @Override

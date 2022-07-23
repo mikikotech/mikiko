@@ -4,7 +4,6 @@ import SignInScreen from '../screen/authscreens/SignInScreen';
 import SignUpScreen from '../screen/authscreens/SignUpScreen';
 import PhoneScreen from '../screen/authscreens/PhoneScreen';
 import PhoneScreenOtp from '../screen/authscreens/PhoneScreeOtp';
-import SplashScreen from 'react-native-splash-screen';
 import {PermissionsAndroid} from 'react-native';
 
 export type AuthStackParams = {

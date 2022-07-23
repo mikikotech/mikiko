@@ -57,6 +57,10 @@ class TuyaHome {
     });
   }
 
+  TuyaHomeStatusListener(homeId: number) {
+    TuyaHomeModule.TuyaHomeStatusListener(homeId);
+  }
+
   onDestroy() {
     TuyaHomeModule.onDestroy();
   }

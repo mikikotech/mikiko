@@ -186,22 +186,21 @@ const RouteNavigation = () => {
   }, []);
 
   useEffect(() => {
-    // const subscriber = auth().onAuthStateChanged(res => {
-    //   console.log('user login = ', res);
-    //   if (
-    //     res?.emailVerified ||
-    //     res?.email != null ||
-    //     (res?.phoneNumber !== null && res?.displayName != null)
-    //   ) {
-    //     dispatch({type: ActionType.LOGIN, payload: res});
-    //   }
-    // });
+    const subscriber = auth().onAuthStateChanged(res => {
+      console.log('user login = ', res);
 
-    isUserLogin();
+      if (
+        res?.emailVerified ||
+        res?.email != null ||
+        (res?.phoneNumber !== null && res?.displayName != null)
+      ) {
+        dispatch({type: ActionType.LOGIN, payload: res});
+      }
+    });
 
-    return () => {
-      true;
-    };
+    // isUserLogin();
+
+    return () => subscriber();
   }, []);
 
   const config = {

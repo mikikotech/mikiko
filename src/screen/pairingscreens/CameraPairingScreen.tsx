@@ -148,8 +148,8 @@ const CameraPairingScreen = ({navigation}: Nav) => {
           fontSize={FONT_SUB}
           mt={2}
           color="gray.500">
-          Press and hold reset button on device for 5 second until you see
-          "Waiting wifi" on LCD screen and device ready to pair.
+          Press and hold reset button on device for 5 second until you see led
+          blinking rapidly and device ready to pair.
         </Text>
         <Text
           _dark={{color: FONT_INACTIVE_DARK}}

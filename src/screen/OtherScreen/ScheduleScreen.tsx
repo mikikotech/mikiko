@@ -258,6 +258,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
         onPress={() => {
           navigation.navigate('Scheduledetail', {
             id: id,
+            switchName: switchName,
           });
         }}
         size="sm"

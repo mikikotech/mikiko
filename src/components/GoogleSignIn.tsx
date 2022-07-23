@@ -8,6 +8,7 @@ import Geocoder from 'react-native-geocoder';
 import {ITEM_WIDTH_H4} from '../utils/constanta';
 import TuyaUser from '../lib/TuyaUser';
 import TuyaHome from '../lib/TuyaHome';
+import firestore from '@react-native-firebase/firestore';
 
 const GoogleLogin = () => {
   const [lat, setLat] = useState(0);
@@ -45,7 +46,24 @@ const GoogleLogin = () => {
   }, []);
 
   useEffect(() => {
-    getPostisions();
+    // getPostisions();
+    RNLocation.configure({
+      distanceFilter: 5.0,
+      desiredAccuracy: {
+        ios: 'best',
+        android: 'balancedPowerAccuracy',
+      },
+      androidProvider: 'auto',
+    });
+
+    const subscribe = RNLocation.subscribeToLocationUpdates(res => {
+      setLat(res[0].latitude);
+      setLon(res[0].longitude);
+
+      getpos(res[0].latitude, res[0].longitude);
+    });
+
+    return () => subscribe();
   }, []);
 
   GoogleSignin.configure({
@@ -81,7 +99,28 @@ const GoogleLogin = () => {
 
     console.log('google credential === ', googleCredential.token);
 
-    // Sign-in the user with the credential
+    const googleLogin = auth().signInWithCredential(googleCredential);
+
+    const googleRespone = (await googleLogin).user;
+
+    if ((await googleLogin).additionalUserInfo.isNewUser) {
+      firestore()
+        .collection('users')
+        .doc(
+          googleRespone.email !== null
+            ? googleRespone.email
+            : googleRespone.uid,
+        )
+        .set({
+          email:
+            googleRespone.email !== null
+              ? googleRespone.email
+              : googleRespone.uid,
+          shared: [],
+          device: [],
+        });
+    }
+
     return auth().signInWithCredential(googleCredential);
   };
 

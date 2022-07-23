@@ -25,6 +25,7 @@ import {useSelector} from 'react-redux';
 import {ReducerRootState} from '../../redux/Reducer';
 import {NativeEventEmitter, NativeModules} from 'react-native';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
+import TuyaCamera from '../../lib/TuyaCamera';
 const eventEmitter = new NativeEventEmitter(NativeModules.TuyaCameraModule);
 
 type Nav = StackScreenProps<any>;
@@ -37,29 +38,38 @@ const TuyaSettingScreen = ({navigation, route}: Nav) => {
   const [initPair, setInitPair] = useState<boolean>(true);
   const [cloudPair, SetCloudPair] = useState<boolean>(false);
   const [getready, setGetReady] = useState<boolean>(false);
+  const [done, setDone] = useState<boolean>(false);
   const [e, setE] = useState<any>(undefined);
 
-  useEffect(
-    () =>
-      navigation.addListener('beforeRemove', e => {
-        if (hasUnsavedChanges == false) {
-          return;
-        }
+  // useEffect(
+  //   () =>
+  //     navigation.addListener('beforeRemove', e => {
+  //       if (hasUnsavedChanges == false) {
+  //         return;
+  //       }
 
-        e.preventDefault();
+  //       e.preventDefault();
 
-        setE(e.data.action);
+  //       setE(e.data.action);
 
-        setShow(true);
-      }),
-    [navigation, hasUnsavedChanges],
-  );
+  //       if (done == false) {
+  //         setShow(true);
+  //       }
+  //     }),
+  //   [navigation, hasUnsavedChanges],
+  // );
 
   useEffect(() => {
     const pairlistener = eventEmitter.addListener('pair', (res: any) => {
       console.log(res);
 
-      navigation.replace('Bottomtabsbase');
+      SetCloudPair(false);
+
+      TuyaCamera.stopPairing();
+
+      setTimeout(() => {
+        navigation.replace('Bottomtabsbase');
+      }, 2000);
     });
 
     setTimeout(() => {

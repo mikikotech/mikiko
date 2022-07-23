@@ -183,11 +183,12 @@ const EditDeviceScreen = ({navigation, route}: Nav) => {
               alignItems={'center'}
               onPress={() => {
                 firestore()
-                  .collection(
-                    state.auth.email !== null
-                      ? state.auth.email
-                      : state.auth.uid,
-                  )
+                  // .collection(
+                  //   state.auth.email !== null
+                  //     ? state.auth.email
+                  //     : state.auth.uid,
+                  // )
+                  .collection('devices')
                   .doc(bssid)
                   .update({
                     gardenName: deviceName,

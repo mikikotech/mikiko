@@ -9,6 +9,7 @@ import RNLocation from 'react-native-location';
 import Geocoder from 'react-native-geocoder';
 import TuyaUser from '../lib/TuyaUser';
 import TuyaHome from '../lib/TuyaHome';
+import firestore from '@react-native-firebase/firestore';
 
 const FacebookLogin = () => {
   const [lat, setLat] = useState(0);
@@ -46,7 +47,25 @@ const FacebookLogin = () => {
   }, []);
 
   useEffect(() => {
-    getPostisions();
+    // getPostisions();
+
+    RNLocation.configure({
+      distanceFilter: 5.0,
+      desiredAccuracy: {
+        ios: 'best',
+        android: 'balancedPowerAccuracy',
+      },
+      androidProvider: 'auto',
+    });
+
+    const subscribe = RNLocation.subscribeToLocationUpdates(res => {
+      setLat(res[0].latitude);
+      setLon(res[0].longitude);
+
+      getpos(res[0].latitude, res[0].longitude);
+    });
+
+    return () => subscribe();
   }, []);
 
   async function onFacebookButtonPress() {
@@ -93,7 +112,16 @@ const FacebookLogin = () => {
     auth()
       .signInWithCredential(facebookCredential)
       .then(res => {
-        // console.log('facebook login = ', res);
+        if (res.additionalUserInfo.isNewUser) {
+          firestore()
+            .collection('users')
+            .doc(res.user.email !== null ? res.user.email : res.user.uid)
+            .set({
+              email: res.user.email !== null ? res.user.email : res.user.uid,
+              shared: [],
+              device: [],
+            });
+        }
       });
   }
 

@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import {Box, Checkbox, Icon, Menu} from 'native-base';
+import {Box, Checkbox, Icon, Input, Menu} from 'native-base';
 import React, {useContext, useState} from 'react';
 import {Pressable, NativeModules} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -31,8 +31,10 @@ const TuyaStagger = ({devId}: Props) => {
   const state = useSelector((state: ReducerRootState) => state);
 
   const {RemoveDevice} = useContext(AuthContex);
+
   const [show, setShow] = useState(false);
-  const [check, checkSet] = useState<boolean>(true);
+  const [check, checkSet] = useState<boolean>(false);
+  const [devName, setDevName] = useState<string>('');
 
   return (
     <Box>
@@ -55,24 +57,42 @@ const TuyaStagger = ({devId}: Props) => {
         <Menu.Item onPress={() => setShow(true)} _text={{fontSize: FONT_SUB}}>
           Delete
         </Menu.Item>
-        <Menu.Item>Edit</Menu.Item>
+        <Menu.Item
+          onPress={() => {
+            setShow(true);
+            checkSet(true);
+          }}>
+          Edit
+        </Menu.Item>
       </Menu>
       {/* alert */}
       <ModalAlert
         show={show}
-        schema="trash-can"
-        title="Delete Device ?"
-        message="Are you sure delete this device ?"
+        schema={check ? 'check' : 'trash-can'}
+        title={check ? 'Rename Device' : 'Delete Device ?'}
+        message={check ? 'Rename Device' : 'Are you sure delete this device ?'}
         onPress={async () => {
-          setShow(false);
+          if (check) {
+            TuyaDevice.renameDevice(devId, devName).then(res => {
+              console.log(res);
+              checkSet(false);
+            });
+          } else {
+            TuyaDevice.removeDevice(devId).then(res => {
+              console.log(res);
+            });
+          }
 
-          TuyaDevice.removeDevice(devId).then(res => {
-            console.log(res);
-          });
+          setShow(false);
         }}
         onCancel={() => {
           setShow(false);
-        }}></ModalAlert>
+          checkSet(false);
+        }}>
+        {check ? (
+          <Input value={devName} onChangeText={val => setDevName(val)} />
+        ) : null}
+      </ModalAlert>
       {/* end alert */}
     </Box>
   );
