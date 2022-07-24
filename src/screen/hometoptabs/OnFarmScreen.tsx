@@ -33,48 +33,48 @@ type Nav = StackScreenProps<HomeStackParams>;
 
 const OnFarmScreen = ({navigation}: Nav) => {
   const state = useSelector((state: ReducerRootState) => state);
-  const [deviceList, deviceListSet] = useState<Array<deviceList>>([]);
+  const [deviceList, deviceListSet] = useState<Array<any>>([]);
   const [status, statusSet] = useState<boolean>(true);
 
   LogBox.ignoreAllLogs();
 
-  // useLayoutEffect(() => {
-  //     const subscribe = firestore()
-  //       .collection('devices')
-  //       .where(
-  //         'devOwner',
-  //         '==',
-  //         state.auth.email !== null ? state.auth.email : state.auth.uid,
-  //       )
-  //       .where('scene', '==', 'onFarm')
-  //       .onSnapshot((querySnapshot : any) => {
-  //         console.log('filter query ===================', querySnapshot.docs);
-
-  //         if(querySnapshot.size == 0){
-  //           deviceListSet([])
-  //         }else{
-  //           deviceListSet(querySnapshot.docs);
-  //         }
-  //       });
-  //     // .catch(e => {});
-  //  return () => subscribe()
-  // }, []);
-
   useLayoutEffect(() => {
-    firestore()
-      .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
-      .onSnapshot(res => {
-        if (res.size == 0) {
+    const subscribe = firestore()
+      .collection('devices')
+      .where(
+        'devOwner',
+        '==',
+        state.auth.email !== null ? state.auth.email : state.auth.uid,
+      )
+      .where('scene', '==', 'onFarm')
+      .onSnapshot((querySnapshot: any) => {
+        console.log('filter query ===================', querySnapshot.docs);
+
+        if (querySnapshot.size == 0) {
           deviceListSet([]);
         } else {
-          var devices: any = [];
-          res.forEach((device: any) => {
-            devices.push(device._data);
-          });
-          deviceListSet(devices);
+          deviceListSet(querySnapshot.docs);
         }
       });
+    // .catch(e => {});
+    return () => subscribe();
   }, []);
+
+  // useLayoutEffect(() => {
+  //   firestore()
+  //     .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+  //     .onSnapshot(res => {
+  //       if (res.size == 0) {
+  //         deviceListSet([]);
+  //       } else {
+  //         var devices: any = [];
+  //         res.forEach((device: any) => {
+  //           devices.push(device._data);
+  //         });
+  //         deviceListSet(devices);
+  //       }
+  //     });
+  // }, []);
 
   return (
     <Box
@@ -83,50 +83,29 @@ const OnFarmScreen = ({navigation}: Nav) => {
       _light={{bg: BG_LIGHT}}
       _dark={{bg: BG_DARK}}
       px={3}>
-      {deviceList[0] != undefined ? (
+      {deviceList.length > 0 ? (
         <FlatList
           data={deviceList}
           renderItem={({item}) => {
             // if (item.scene == 'onFarm') statusSet(false);
 
-            const items: Array<any> = deviceList.filter(i => {
-              return i.scene == 'onFarm';
-            });
-
-            console.log('check on farm = ', items[0]);
-
-            if (items[0] != undefined) {
-              statusSet(false);
-            } else {
-              statusSet(true);
-            }
-
             return (
               <Box>
-                {item.scene == 'onFarm' ? (
-                  // <Pressable
-                  //   mt={2}
-                  //   onPress={() => {
-                  //     navigation.navigate('Toptabsbase', {id: item.id});
-                  //   }}>
-                  <DeviceList
-                    gardenName={item.gardenName}
-                    id={item.id}
-                    location={item.location}
-                    shared={false}
-                    scene={item.scene}
-                    model={item.model}
-                    switchName={item.switchName}
-                  />
-                ) : // </Pressable>
-                null}
+                <DeviceList
+                  gardenName={item._data.gardenName}
+                  id={item._data.id}
+                  location={item._data.location}
+                  shared={false}
+                  scene={item._data.scene}
+                  model={item._data.model}
+                  switchName={item._data.switchName}
+                />
               </Box>
             );
           }}
           keyExtractor={item => item.id}
         />
-      ) : null}
-      {status ? (
+      ) : (
         <VStack
           justifyContent={'center'}
           position="absolute"
@@ -153,7 +132,7 @@ const OnFarmScreen = ({navigation}: Nav) => {
             ADD
           </Button>
         </VStack>
-      ) : null}
+      )}
     </Box>
   );
 };

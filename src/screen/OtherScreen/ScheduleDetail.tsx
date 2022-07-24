@@ -401,9 +401,10 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
             };
 
             firestore()
-              .collection(
-                state.auth.email !== null ? state.auth.email : state.auth.uid,
-              )
+              // .collection(
+              //   state.auth.email !== null ? state.auth.email : state.auth.uid,
+              // )
+              .collection('devices')
               .doc(id)
               .update({
                 schedule: firestore.FieldValue.arrayUnion(newSchedule),

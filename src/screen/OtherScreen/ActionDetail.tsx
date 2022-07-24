@@ -295,9 +295,10 @@ const ActionDetail = ({navigation, route}: Nav) => {
             };
 
             firestore()
-              .collection(
-                state.auth.email !== null ? state.auth.email : state.auth.uid,
-              )
+              // .collection(
+              //   state.auth.email !== null ? state.auth.email : state.auth.uid,
+              // )
+              .collection('devices')
               .doc(id)
               .update({
                 actions: firestore.FieldValue.arrayUnion(newSchedule),

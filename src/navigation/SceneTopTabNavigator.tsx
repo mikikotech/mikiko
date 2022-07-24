@@ -85,7 +85,7 @@ function MyTabBar({state, descriptors, navigation, position}) {
               justifyContent="center"
               alignItems={'center'}>
               <Text
-                _light={{color: isFocused ? BG_DARK : 'gray.300'}}
+                _light={{color: isFocused ? BG_DARK : 'gray.400'}}
                 _dark={{
                   color: isFocused ? FONT_ACTIVE_DARK : FONT_INACTIVE_DARK,
                 }}>

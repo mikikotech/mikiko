@@ -151,35 +151,51 @@ const StaggerView = ({
                 .doc(
                   state.auth.email !== null ? state.auth.email : state.auth.uid,
                 )
-                .get()
-                .then((res: any) => {
-                  var devId: Array<string>;
-
-                  res._data.shared.map((resp, index) => {
-                    if (resp[index] != id) {
-                      devId.push(resp[index]);
-                    }
-                  });
-
-                  try {
-                    firestore()
-                      .collection('users')
-                      .doc(
-                        state.auth.email !== null
-                          ? state.auth.email
-                          : state.auth.uid,
-                      )
-                      .update({
-                        shared: devId,
-                      });
-                  } catch (error) {}
+                .update({
+                  shared: firestore.FieldValue.arrayRemove(id),
                 });
             } catch (error) {}
+
+            // try {
+            //   firestore()
+            //     .collection('users')
+            //     .doc(
+            //       state.auth.email !== null ? state.auth.email : state.auth.uid,
+            //     )
+            //     .get()
+            //     .then((res: any) => {
+            //       var devId: Array<string>;
+
+            //       res._data.shared.map((resp, index) => {
+            //         if (res._data.shared.length > 1) {
+            //           if (resp[index] != id) {
+            //             devId.push(resp[index]);
+            //           }
+            //         } else {
+            //           devId = [];
+            //         }
+            //       });
+
+            //       try {
+            //         firestore()
+            //           .collection('users')
+            //           .doc(
+            //             state.auth.email !== null
+            //               ? state.auth.email
+            //               : state.auth.uid,
+            //           )
+            //           .update({
+            //             shared: devId,
+            //           });
+            //       } catch (error) {}
+            //     });
+            // } catch (error) {}
           } else {
             firestore()
-              .collection(
-                state.auth.email !== null ? state.auth.email : state.auth.uid,
-              )
+              // .collection(
+              //   state.auth.email !== null ? state.auth.email : state.auth.uid,
+              // )
+              .collection('devices')
               .doc(id)
               .delete()
               .then(() => {
@@ -195,23 +211,25 @@ const StaggerView = ({
         onCancel={() => {
           setShow(false);
         }}>
-        <Checkbox
-          mt={5}
-          _dark={{bg: BG_BOX_DARK, borderColor: FONT_INACTIVE_DARK}}
-          _light={{bg: BG_LIGHT}}
-          _checked={{
-            backgroundColor: PRIMARY_COLOR,
-            borderColor: PRIMARY_COLOR,
-          }}
-          size={'sm'}
-          value="data"
-          isChecked={check}
-          _text={{fontSize: FONT_SUB, _dark: {color: FONT_INACTIVE_DARK}}}
-          onChange={() => {
-            checkSet(prev => !prev);
-          }}>
-          Delete data ?
-        </Checkbox>
+        {shared ? null : (
+          <Checkbox
+            mt={5}
+            _dark={{bg: BG_BOX_DARK, borderColor: FONT_INACTIVE_DARK}}
+            _light={{bg: BG_LIGHT}}
+            _checked={{
+              backgroundColor: PRIMARY_COLOR,
+              borderColor: PRIMARY_COLOR,
+            }}
+            size={'sm'}
+            value="data"
+            isChecked={check}
+            _text={{fontSize: FONT_SUB, _dark: {color: FONT_INACTIVE_DARK}}}
+            onChange={() => {
+              checkSet(prev => !prev);
+            }}>
+            Delete data ?
+          </Checkbox>
+        )}
       </ModalAlert>
       {/* end alert */}
     </Box>

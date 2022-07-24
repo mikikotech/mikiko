@@ -49,6 +49,8 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
   const [mode, modeSet] = useState<string>('');
   const [devices, devicesSet] = useState<Array<any>>();
   const [camId, camIdSet] = useState<string>('');
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
 
   var loc = route?.params?.location;
   var device = route?.params?.deviceInfo;
@@ -67,6 +69,9 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
 
     RNLocation.subscribeToLocationUpdates(async locations => {
       // console.log(locations);
+
+      setLongitude(locations[0].longitude);
+      setLatitude(locations[0].latitude);
 
       let res = await Geocoder.geocodePosition({
         lat: locations[0].latitude,
@@ -295,6 +300,8 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
                   .set({
                     gardenName: deviceName,
                     location: location,
+                    geoPoint: new firestore.GeoPoint(latitude, longitude),
+                    createdAt: firestore.FieldValue.serverTimestamp(),
                     id: bssid,
                     scene: scene,
                     model: mode,

@@ -1,16 +1,6 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import {
-  Box,
-  Button,
-  Center,
-  HStack,
-  Icon,
-  Spinner,
-  Text,
-  VStack,
-} from 'native-base';
+import {Box, Center, HStack, Icon, Spinner, Text, VStack} from 'native-base';
 import React, {useEffect, useState} from 'react';
-import {Alert} from 'react-native';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import RNEsptouch from 'react-native-esptouch2';

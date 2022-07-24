@@ -52,7 +52,8 @@ const ActionScreen = ({navigation, route}: Nav) => {
 
   useEffect(() => {
     firestore()
-      .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      // .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      .collection('devices')
       .doc(id)
       .get()
       .then(res => {
@@ -79,9 +80,10 @@ const ActionScreen = ({navigation, route}: Nav) => {
       actionListSet(newActions);
 
       firestore()
-        .collection(
-          state.auth.email !== null ? state.auth.email : state.auth.uid,
-        )
+        // .collection(
+        //   state.auth.email !== null ? state.auth.email : state.auth.uid,
+        // )
+        .collection('devices')
         .doc(id)
         .update({
           actions: newActions,
@@ -163,11 +165,12 @@ const ActionScreen = ({navigation, route}: Nav) => {
                     actionListSet(newActions);
 
                     firestore()
-                      .collection(
-                        state.auth.email !== null
-                          ? state.auth.email
-                          : state.auth.uid,
-                      )
+                      // .collection(
+                      //   state.auth.email !== null
+                      //     ? state.auth.email
+                      //     : state.auth.uid,
+                      // )
+                      .collection('devices')
                       .doc(id)
                       .update({
                         actions: newActions,

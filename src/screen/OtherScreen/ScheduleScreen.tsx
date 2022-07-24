@@ -51,7 +51,8 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
 
   useEffect(() => {
     firestore()
-      .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      // .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      .collection('devices')
       .doc(id)
       .get()
       .then(res => {
@@ -80,17 +81,20 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
       scheduleListSet(newSchedule);
 
       if (MQTTClient != null && MQTTClient != undefined) {
-        firestore()
-          .collection(
-            state.auth.email !== null ? state.auth.email : state.auth.uid,
-          )
-          .doc(id)
-          .update({
-            schedule: newSchedule,
-          })
-          .then(() => {
-            MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, false);
-          });
+        try {
+          firestore()
+            // .collection(
+            //   state.auth.email !== null ? state.auth.email : state.auth.uid,
+            // )
+            .collection('devices')
+            .doc(id)
+            .update({
+              schedule: newSchedule,
+            })
+            .then(() => {
+              MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, false);
+            });
+        } catch (error) {}
       }
     }
   };
@@ -174,11 +178,12 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                     scheduleListSet(newSchedule);
 
                     firestore()
-                      .collection(
-                        state.auth.email !== null
-                          ? state.auth.email
-                          : state.auth.uid,
-                      )
+                      // .collection(
+                      //   state.auth.email !== null
+                      //     ? state.auth.email
+                      //     : state.auth.uid,
+                      // )
+                      .collection('devices')
                       .doc(id)
                       .update({
                         schedule: newSchedule,

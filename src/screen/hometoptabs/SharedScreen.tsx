@@ -92,24 +92,17 @@ const SharedScreen = ({navigation}: Nav) => {
           data={deviceList}
           renderItem={item => {
             console.log(item.item);
-
             return (
-              <Box>
-                <Text>{item.item?._data?.gardenName}</Text>
-              </Box>
+              <DeviceList
+                gardenName={item?.item?._data?.gardenName}
+                id={item?.item?._data?.id}
+                location={item?.item?._data?.location}
+                shared={true}
+                scene={item?.item?._data?.scene}
+                model={item?.item?._data?.model}
+                switchName={item?.item?._data?.switchName}
+              />
             );
-
-            // return (
-            //   <DeviceList
-            //     gardenName={item?.item?._data?.gardenName}
-            //     id={item?.item?._data?.id}
-            //     location={item?.item?._data?.location}
-            //     shared={true}
-            //     scene={item?.item?._data?.scene}
-            //     model={item?.item?._data?.model}
-            //     switchName={item?.item?._data?.switchName}
-            //   />
-            // );
           }}
         />
       ) : (

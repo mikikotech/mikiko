@@ -37,50 +37,62 @@ const BarcodeScreen = ({navigation}: Nav) => {
 
         if (strData[1] !== userId) {
           try {
+            // firestore()
+            //   .collection('users')
+            //   .doc(
+            //     state.auth.email !== null ? state.auth.email : state.auth.uid,
+            //   )
+            //   .get()
+            //   .then((resp: any) => {
+            //     if (resp._data.shared.length == 0) {
+            //       try {
+            //         firestore()
+            //           .collection('users')
+            //           .doc(
+            //             state.auth.email !== null
+            //               ? state.auth.email
+            //               : state.auth.uid,
+            //           )
+            //           .update({
+            //             shared: [strData[0]],
+            //           })
+            //           .then(() => {
+            //             navigation.navigate('Bottomtabsbase');
+            //           });
+            //       } catch (error) {}
+            //     } else {
+            //       var devId: Array<string> = resp._data.shared;
+
+            //       devId.push(strData[0]);
+
+            //       try {
+            //         firestore()
+            //           .collection('users')
+            //           .doc(
+            //             state.auth.email !== null
+            //               ? state.auth.email
+            //               : state.auth.uid,
+            //           )
+            //           .update({
+            //             shared: devId,
+            //           })
+            //           .then(() => {
+            //             navigation.navigate('Bottomtabsbase');
+            //           });
+            //       } catch (error) {}
+            //     }
+            //   });
+
             firestore()
               .collection('users')
               .doc(
                 state.auth.email !== null ? state.auth.email : state.auth.uid,
               )
-              .get()
-              .then((resp: any) => {
-                if (resp._data.shared.length == 0) {
-                  try {
-                    firestore()
-                      .collection('users')
-                      .doc(
-                        state.auth.email !== null
-                          ? state.auth.email
-                          : state.auth.uid,
-                      )
-                      .update({
-                        shared: [strData[0]],
-                      })
-                      .then(() => {
-                        navigation.navigate('Bottomtabsbase');
-                      });
-                  } catch (error) {}
-                } else {
-                  var devId: Array<string> = resp._data.shared;
-
-                  devId.push(strData[0]);
-
-                  try {
-                    firestore()
-                      .collection('users')
-                      .doc(
-                        state.auth.email !== null
-                          ? state.auth.email
-                          : state.auth.uid,
-                      )
-                      .update({
-                        shared: devId,
-                      })
-                      .then(() => {
-                        navigation.navigate('Bottomtabsbase');
-                      });
-                  } catch (error) {}
-                }
+              .update({
+                shared: firestore.FieldValue.arrayUnion(strData[0]),
+              })
+              .then(() => {
+                navigation.navigate('Bottomtabsbase');
               });
           } catch (error) {}
         } else {

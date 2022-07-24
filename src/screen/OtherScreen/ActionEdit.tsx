@@ -99,7 +99,8 @@ const ActionEdit = ({navigation, route}: Nav) => {
     }
 
     firestore()
-      .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      // .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      .collection('devices')
       .doc(id)
       .get()
       .then(res => {
@@ -353,9 +354,10 @@ const ActionEdit = ({navigation, route}: Nav) => {
             });
 
             firestore()
-              .collection(
-                state.auth.email !== null ? state.auth.email : state.auth.uid,
-              )
+              // .collection(
+              //   state.auth.email !== null ? state.auth.email : state.auth.uid,
+              // )
+              .collection('devices')
               .doc(id)
               .update({
                 actions: newActionEdit,

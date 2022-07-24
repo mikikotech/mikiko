@@ -69,7 +69,8 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
     timeSet(_time);
 
     firestore()
-      .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      // .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
+      .collection('devices')
       .doc(id)
       .get()
       .then(res => {
@@ -441,9 +442,10 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
             // Schedule(newSchedule);
 
             firestore()
-              .collection(
-                state.auth.email !== null ? state.auth.email : state.auth.uid,
-              )
+              // .collection(
+              //   state.auth.email !== null ? state.auth.email : state.auth.uid,
+              // )
+              .collection('devices')
               .doc(id)
               .update({
                 schedule: newScheduleEdit,
