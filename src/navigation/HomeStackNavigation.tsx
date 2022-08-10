@@ -22,6 +22,7 @@ import ScheduleEdit from '../screen/OtherScreen/ScheduleEdit';
 import ActionEdit from '../screen/OtherScreen/ActionEdit';
 import ProfileStackScreen from './ProfileStackNavigation';
 import EditDeviceScreen from '../screen/hometoptabs/EditDeviceScreen';
+import SwitchScreen from '../screen/sonoffScreen/SwitchScreen';
 
 export type HomeStackParams = {
   Homebase;
@@ -39,6 +40,7 @@ export type HomeStackParams = {
   Actiondetail;
   Actionedit;
   Editdevice;
+  Switch;
 };
 
 const Stack = createStackNavigator<HomeStackParams>();
@@ -134,6 +136,11 @@ const HomeStackNavigation = () => {
         name="Editdevice"
         component={EditDeviceScreen}
         options={{title: 'Device Config'}}
+      />
+      <Stack.Screen
+        name="Switch"
+        component={SwitchScreen}
+        options={{title: 'Control'}}
       />
     </Stack.Navigator>
   );

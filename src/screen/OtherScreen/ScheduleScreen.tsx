@@ -166,10 +166,11 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                 onThumbColor={PRIMARY_COLOR}
                 onTrackColor={SECONDARY_COLOR}
                 onChange={() => {
+                  var state: boolean = data.item.status;
                   if (MQTTClient != null && MQTTClient != undefined) {
                     const newSchedule = scheduleList?.map(res => {
                       if (res.id == data.item.id) {
-                        return {...res, status: !data.item.status};
+                        return {...res, status: !state};
                       }
 
                       return res;
@@ -177,25 +178,27 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
 
                     scheduleListSet(newSchedule);
 
-                    firestore()
-                      // .collection(
-                      //   state.auth.email !== null
-                      //     ? state.auth.email
-                      //     : state.auth.uid,
-                      // )
-                      .collection('devices')
-                      .doc(id)
-                      .update({
-                        schedule: newSchedule,
-                      })
-                      .then(() => {
-                        MQTTClient.publish(
-                          `/${id}/data/schedule`,
-                          'true',
-                          0,
-                          true,
-                        );
-                      });
+                    try {
+                      firestore()
+                        // .collection(
+                        //   state.auth.email !== null
+                        //     ? state.auth.email
+                        //     : state.auth.uid,
+                        // )
+                        .collection('devices')
+                        .doc(id)
+                        .update({
+                          schedule: newSchedule,
+                        })
+                        .then(() => {
+                          MQTTClient.publish(
+                            `/${id}/data/schedule`,
+                            'true',
+                            0,
+                            true,
+                          );
+                        });
+                    } catch (error) {}
                   }
                 }}
                 value={data.item.status}

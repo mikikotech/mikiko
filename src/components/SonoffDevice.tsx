@@ -29,7 +29,6 @@ import {
 } from '../utils/constanta';
 import SplashScreen from 'react-native-splash-screen';
 import AndroidToast from '../utils/AndroidToast';
-import PushNotification from 'react-native-push-notification';
 import NetInfo from '@react-native-community/netinfo';
 
 interface Props {
@@ -46,7 +45,7 @@ var MQTTClient: IMqttClient;
 
 // type nav = StackScreenProps<HomeStackParams>;
 
-const DeviceList = ({
+const SonoffDevice = ({
   gardenName,
   location,
   id,
@@ -59,22 +58,11 @@ const DeviceList = ({
 
   const [isLoading, isLoadingSet] = useState(true);
   const [isConnected, isConnectedSet] = useState('true');
-  const [weather, weatherSet] = useState('false');
   const [channel1, channel1Set] = useState('false');
   const [channel2, channel2Set] = useState('false');
   const [channel3, channel3Set] = useState('false');
   const [channel4, channel4Set] = useState('false');
-  const [channel5, channel5Set] = useState('false');
   const [firmwareVersion, firmwareVersionSet] = useState('');
-
-  const sendNotification = (channel, title, body) => {
-    PushNotification.localNotification({
-      channelId: channel,
-      title: title,
-      message: body,
-      soundName: 'my_sound.mp3',
-    });
-  };
 
   useEffect(() => {
     navigation.addListener('focus', () => {
@@ -102,16 +90,7 @@ const DeviceList = ({
         client.on('message', function (msg) {
           // console.log('mqtt.event.message', msg);
 
-          if (msg.topic == `/${id}/data/weather`) {
-            if (msg.data == 'true') {
-              sendNotification(
-                '1',
-                `${gardenName} Turun hujan`,
-                'Amati kebun anda',
-              );
-            }
-            weatherSet(msg.data);
-          } else if (msg.topic == `${id}`) {
+          if (msg.topic == `${id}`) {
             isConnectedSet(msg.data);
           }
 
@@ -124,8 +103,6 @@ const DeviceList = ({
               channel3Set(msg.data);
             } else if (msg.topic == `/${id}/data/btnfour`) {
               channel4Set(msg.data);
-            } else if (msg.topic == `/${id}/data/btnfive`) {
-              channel5Set(msg.data);
             } else if (msg.topic == `/${id}/data/firmwareversion`) {
               firmwareVersionSet(msg.data);
             }
@@ -138,7 +115,6 @@ const DeviceList = ({
           client.subscribe(`/${id}/data/btntwo`, 0);
           client.subscribe(`/${id}/data/btnthree`, 0);
           client.subscribe(`/${id}/data/btnfour`, 0);
-          client.subscribe(`/${id}/data/btnfive`, 0);
           client.subscribe(`/${id}/data/weather`, 0);
           client.subscribe(`${id}`, 0);
           client.subscribe(`/${id}/data/firmwareversion`, 0);
@@ -252,9 +228,8 @@ const DeviceList = ({
       <VStack>
         <Pressable
           onPress={() => {
-            navigation.navigate('Toptabsbase', {
+            navigation.navigate('Switch', {
               id: id,
-              weather: weather,
               switchName: switchName,
             });
           }}>
@@ -267,7 +242,6 @@ const DeviceList = ({
               color={isConnected == 'true' ? PRIMARY_COLOR : DISABLE_COLOR}
               style={{textTransform: 'capitalize'}}>
               {gardenName}{' '}
-              <Icon name={weather == 'true' ? 'cloud-rain' : 'sun'} size={18} />
             </Text>
             {/* {!shared ? ( */}
             <StaggerView
@@ -448,40 +422,10 @@ const DeviceList = ({
               {switchName[3]}
             </Text>
           </VStack>
-          <VStack>
-            <Switch
-              isDisabled={isConnected == 'true' ? false : true}
-              isChecked={channel5 == 'true' ? true : false}
-              onThumbColor={PRIMARY_COLOR}
-              onTrackColor={SECONDARY_COLOR}
-              _dark={{offThumbColor: FONT_INACTIVE_DARK}}
-              onChange={() => {
-                Vibration.vibrate(500);
-                channel5 == 'true' ? channel5Set('false') : channel5Set('true');
-                channel5 == 'true'
-                  ? MQTTClient.publish(`/${id}/data/btnfive`, 'false', 0, true)
-                  : MQTTClient.publish(`/${id}/data/btnfive`, 'true', 0, true);
-              }}
-            />
-            <Text
-              fontSize={FONT_SUB}
-              textAlign="center"
-              numberOfLines={1}
-              lineBreakMode="tail"
-              maxW={12}
-              _light={{color: isConnected == 'true' ? BG_DARK : DISABLE_COLOR}}
-              _dark={{
-                color:
-                  isConnected == 'true' ? FONT_INACTIVE_DARK : DISABLE_COLOR,
-              }}>
-              {/* switch5 */}
-              {switchName[4]}
-            </Text>
-          </VStack>
         </HStack>
       </VStack>
     </Box>
   );
 };
 
-export default DeviceList;
+export default SonoffDevice;

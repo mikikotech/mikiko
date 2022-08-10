@@ -48,6 +48,26 @@ const SharedScreen = ({navigation}: Nav) => {
                 //   querySnapshot.docs,
                 // );
 
+                if (resp._data == undefined) {
+                  try {
+                    firestore()
+                      .collection('users')
+                      .doc(
+                        state.auth.email !== null
+                          ? state.auth.email
+                          : state.auth.uid,
+                      )
+                      .set({
+                        device: [],
+                        email:
+                          state.auth.email !== null
+                            ? state.auth.email
+                            : state.auth.uid,
+                        shared: [],
+                      });
+                  } catch (error) {}
+                }
+
                 if (querySnapshot.size != resp._data?.shared.length) {
                   var devId = [];
 
@@ -138,49 +158,15 @@ const SharedScreen = ({navigation}: Nav) => {
         onPress={() => {
           firestore()
             .collection('users')
-            .doc(state.auth.email !== null ? state.auth.email : state.auth.uid)
-            .get()
-            .then((resp: any) => {
-              if (resp._data.shared.length == 0) {
-                try {
-                  firestore()
-                    .collection('users')
-                    .doc(
-                      state.auth.email !== null
-                        ? state.auth.email
-                        : state.auth.uid,
-                    )
-                    .update({
-                      shared: ['aaaaaaaa'],
-                    })
-                    .then(() => {
-                      navigation.navigate('Bottomtabsbase');
-                    });
-                } catch (error) {}
-              } else {
-                var devId: Array<string> = resp._data.shared;
-
-                devId.push('bbbbbbbb');
-
-                try {
-                  firestore()
-                    .collection('users')
-                    .doc(
-                      state.auth.email !== null
-                        ? state.auth.email
-                        : state.auth.uid,
-                    )
-                    .update({
-                      shared: devId,
-                    })
-                    .then(() => {
-                      // navigation.navigate('Bottomtabsbase');
-                    });
-                } catch (error) {}
-              }
+            .doc('testarray')
+            .update({
+              schedule: firestore.FieldValue.arrayUnion({
+                id: '1234',
+                time: '11:22',
+              }),
             });
         }}>
-        update
+        array
       </Button> */}
     </Box>
   );

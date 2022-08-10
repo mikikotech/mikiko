@@ -20,6 +20,7 @@ import TuyaUser from '../lib/TuyaUser';
 import TuyaHome from '../lib/TuyaHome';
 import AuthContex from '../route/AuthContext';
 import SplashScreen from 'react-native-splash-screen';
+import {NoFlickerImage} from 'react-native-no-flicker-image';
 
 export type BottomTabsParams = {
   Home;
@@ -159,12 +160,17 @@ const BottomTabsNavigator = ({navigation}: navBar) => {
               autoplayDelay={5000}
               renderItem={({item, index}) => {
                 return (
-                  <Image
+                  <NoFlickerImage
                     source={{uri: item.uri}}
-                    alt="kampret"
-                    width={Dimensions.get('screen').width}
-                    height={ITEM_HEIGHT_H3 * 0.9}
-                    maxHeight={ITEM_HEIGHT_H3 * 0.9}
+                    style={{
+                      width: Dimensions.get('screen').width,
+                      height: ITEM_HEIGHT_H3 * 0.9,
+                      maxHeight: ITEM_HEIGHT_H3 * 0.9,
+                    }}
+                    // alt="kampret"
+                    // width={Dimensions.get('screen').width}
+                    // height={ITEM_HEIGHT_H3 * 0.9}
+                    // maxHeight={ITEM_HEIGHT_H3 * 0.9}
                   />
                 );
               }}

@@ -1,9 +1,8 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import RouteNavigation from './src/route/RouteNavigation';
 import {Provider} from 'react-redux';
 import store from './src/redux/store';
-import {AppState} from 'react-native';
-import mqtt from 'sp-react-native-mqtt';
+import Heartbeat from './Heartbeat';
 
 const App = () => {
   // useEffect(() => {
@@ -19,6 +18,11 @@ const App = () => {
 
   //   return () => appStateListener.remove();
   // }, []);
+
+  useLayoutEffect(() => {
+    Heartbeat.startService();
+  }, []);
+
   return (
     <Provider store={store}>
       <RouteNavigation />

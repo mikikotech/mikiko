@@ -54,7 +54,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<!--        <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />-->
         <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
+        <service
+            android:name="com.mikiko.heartbeat.HeartbeatEventService">
+        </service>
+        <receiver
+            android:name="com.mikiko.heartbeat.BootUpReceiver"
+            android:enabled="true"
+            android:permission="android.permission.RECEIVE_BOOT_COMPLETED"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"

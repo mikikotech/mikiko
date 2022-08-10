@@ -32,6 +32,7 @@ import {PairingParams} from '../../navigation/PairingNavigation';
 import {Linking, LogBox, PermissionsAndroid} from 'react-native';
 import WifiManager from 'react-native-wifi-reborn';
 import AndroidToast from '../../utils/AndroidToast';
+import RNEsptouch from 'react-native-esptouch2';
 
 type Nav = StackScreenProps<PairingParams>;
 
@@ -111,7 +112,7 @@ const WifiScreen = ({navigation}: Nav) => {
       checkSet(false);
     }
 
-    // RNEsptouch.initESPTouch();
+    RNEsptouch.initESPTouch();
 
     return () => {
       true;
@@ -299,6 +300,8 @@ const WifiScreen = ({navigation}: Nav) => {
             rounded="none"
             // borderWidth={1}
             onPress={() => {
+              RNEsptouch.initESPTouch();
+
               if (isConfirm) {
                 if (ssid != '' && password.length >= 1) {
                   runningSet(false);

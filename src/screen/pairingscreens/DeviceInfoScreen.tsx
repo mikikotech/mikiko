@@ -320,6 +320,8 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
                             'Switch4',
                             'Switch5',
                           ]
+                        : mode == '4CH'
+                        ? ['Switch1', 'Switch2', 'Switch3', 'Switch4']
                         : null,
                   })
                   .then(() => {

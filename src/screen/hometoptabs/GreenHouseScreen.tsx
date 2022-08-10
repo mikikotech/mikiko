@@ -1,15 +1,7 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import {
-  Box,
-  Button,
-  Center,
-  FlatList,
-  Pressable,
-  Text,
-  VStack,
-} from 'native-base';
+import {Box, Button, FlatList, Text, VStack} from 'native-base';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {LogBox, NativeModules} from 'react-native';
+import {LogBox} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import DeviceList from '../../components/DeviceList';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
@@ -27,9 +19,7 @@ import {
 } from './../../utils/constanta';
 import {useSelector} from 'react-redux';
 import {ReducerRootState} from '../../redux/Reducer';
-import TuyaUser from '../../lib/TuyaUser';
-
-const {TuyaCameraModule} = NativeModules;
+import SonoffDevice from '../../components/SonoffDevice';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -106,15 +96,27 @@ const GreenHouseScreen = ({navigation}: Nav) => {
 
             return (
               <Box>
-                <DeviceList
-                  gardenName={item._data.gardenName}
-                  id={item._data.id}
-                  location={item._data.location}
-                  shared={false}
-                  scene={item._data.scene}
-                  model={item._data.model}
-                  switchName={item._data.switchName}
-                />
+                {item._data.model == '5CH' ? (
+                  <DeviceList
+                    gardenName={item._data.gardenName}
+                    id={item._data.id}
+                    location={item._data.location}
+                    shared={false}
+                    scene={item._data.scene}
+                    model={item._data.model}
+                    switchName={item._data.switchName}
+                  />
+                ) : item._data.model == '4CH' ? (
+                  <SonoffDevice
+                    gardenName={item._data.gardenName}
+                    id={item._data.id}
+                    location={item._data.location}
+                    shared={false}
+                    scene={item._data.scene}
+                    model={item._data.model}
+                    switchName={item._data.switchName}
+                  />
+                ) : null}
               </Box>
             );
           }}

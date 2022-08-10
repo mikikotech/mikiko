@@ -4,6 +4,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
+import com.mikiko.heartbeat.HeartbeatModule;
 import com.mikiko.nativeUI.CameraViewManager;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class MyAppPackage implements ReactPackage {
         modules.add(new TuyaRoomModule(reactContext));
         modules.add(new TuyaActivatorModule(reactContext));
         modules.add(new TuyaCameraModule(reactContext));
+        modules.add(new HeartbeatModule(reactContext));
 //        modules.add(new EspTouchModule(reactContext));
 
         return modules;
