@@ -456,6 +456,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
 
             navigation.navigate('Schedule', {
               id: id,
+              switchName: switchName,
             });
           }
         }}

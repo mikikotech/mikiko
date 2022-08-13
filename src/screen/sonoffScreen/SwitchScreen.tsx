@@ -16,7 +16,6 @@ const SwitchScreen = ({navigation, route}: Nav) => {
   const [btntwo, btntwoSet] = useState(false);
   const [btnthree, btnthreeSet] = useState(false);
   const [btnfour, btnfourSet] = useState(false);
-  const [isLoading, isLoadingSet] = useState(true);
 
   let state: Array<{path: string; status: boolean}> = [];
 
@@ -44,33 +43,33 @@ const SwitchScreen = ({navigation, route}: Nav) => {
         client.on('message', function (msg) {
           // console.log('mqtt.event.message', msg);
 
-          if (isLoading) {
-            if (msg.topic == `/${id}/data/btnone`) {
-              if (msg.data == 'true') {
-                btnoneSet(true);
-              } else {
-                btnoneSet(false);
-              }
-            } else if (msg.topic == `/${id}/data/btntwo`) {
-              if (msg.data == 'true') {
-                btntwoSet(true);
-              } else {
-                btntwoSet(false);
-              }
-            } else if (msg.topic == `/${id}/data/btnthree`) {
-              if (msg.data == 'true') {
-                btnthreeSet(true);
-              } else {
-                btnthreeSet(false);
-              }
-            } else if (msg.topic == `/${id}/data/btnfour`) {
-              if (msg.data == 'true') {
-                btnfourSet(true);
-              } else {
-                btnfourSet(false);
-              }
+          // if (isLoading) {
+          if (msg.topic == `/${id}/data/btnone`) {
+            if (msg.data == 'true') {
+              btnoneSet(true);
+            } else {
+              btnoneSet(false);
+            }
+          } else if (msg.topic == `/${id}/data/btntwo`) {
+            if (msg.data == 'true') {
+              btntwoSet(true);
+            } else {
+              btntwoSet(false);
+            }
+          } else if (msg.topic == `/${id}/data/btnthree`) {
+            if (msg.data == 'true') {
+              btnthreeSet(true);
+            } else {
+              btnthreeSet(false);
+            }
+          } else if (msg.topic == `/${id}/data/btnfour`) {
+            if (msg.data == 'true') {
+              btnfourSet(true);
+            } else {
+              btnfourSet(false);
             }
           }
+          // }
         });
 
         client.on('connect', function () {
@@ -87,15 +86,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
       .catch(function (err) {
         console.log(err);
       });
-
-    return () => isLoadingSet(true);
   }, [navigation]);
-
-  useEffect(() => {
-    isLoadingSet(false);
-
-    return () => isLoadingSet(true);
-  }, []);
 
   if (MQTTClient == undefined)
     return (
@@ -124,6 +115,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
           key={1}
           onPress={() => {
             // btnoneSet(!btnone);
+            btnoneSet(prev => !prev);
             btnone == true
               ? MQTTClient.publish(`/${id}/data/btnone`, 'false', 0, true)
               : MQTTClient.publish(`/${id}/data/btnone`, 'true', 0, true);
@@ -134,7 +126,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
         <ControlButton
           key={2}
           onPress={() => {
-            // btntwoSet(!btntwo);
+            btntwoSet(prev => !prev);
             btntwo == true
               ? MQTTClient.publish(`/${id}/data/btntwo`, 'false', 0, true)
               : MQTTClient.publish(`/${id}/data/btntwo`, 'true', 0, true);
@@ -146,7 +138,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
         <ControlButton
           key={3}
           onPress={() => {
-            // btnthreeSet(!btnthree);
+            btnthreeSet(prev => !prev);
             btnthree == true
               ? MQTTClient.publish(`/${id}/data/btnthree`, 'false', 0, true)
               : MQTTClient.publish(`/${id}/data/btnthree`, 'true', 0, true);
@@ -157,7 +149,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
         <ControlButton
           key={4}
           onPress={() => {
-            // btnfourSet(!btnfour);
+            btnfourSet(prev => !prev);
             btnfour == true
               ? MQTTClient.publish(`/${id}/data/btnfour`, 'false', 0, true)
               : MQTTClient.publish(`/${id}/data/btnfour`, 'true', 0, true);

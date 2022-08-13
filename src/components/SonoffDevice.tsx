@@ -94,19 +94,19 @@ const SonoffDevice = ({
             isConnectedSet(msg.data);
           }
 
-          if (isLoading) {
-            if (msg.topic == `/${id}/data/btnone`) {
-              channel1Set(msg.data);
-            } else if (msg.topic == `/${id}/data/btntwo`) {
-              channel2Set(msg.data);
-            } else if (msg.topic == `/${id}/data/btnthree`) {
-              channel3Set(msg.data);
-            } else if (msg.topic == `/${id}/data/btnfour`) {
-              channel4Set(msg.data);
-            } else if (msg.topic == `/${id}/data/firmwareversion`) {
-              firmwareVersionSet(msg.data);
-            }
+          // if (isLoading) {
+          if (msg.topic == `/${id}/data/btnone`) {
+            channel1Set(msg.data);
+          } else if (msg.topic == `/${id}/data/btntwo`) {
+            channel2Set(msg.data);
+          } else if (msg.topic == `/${id}/data/btnthree`) {
+            channel3Set(msg.data);
+          } else if (msg.topic == `/${id}/data/btnfour`) {
+            channel4Set(msg.data);
+          } else if (msg.topic == `/${id}/data/firmwareversion`) {
+            firmwareVersionSet(msg.data);
           }
+          // }
         });
 
         client.on('connect', function () {
@@ -115,7 +115,6 @@ const SonoffDevice = ({
           client.subscribe(`/${id}/data/btntwo`, 0);
           client.subscribe(`/${id}/data/btnthree`, 0);
           client.subscribe(`/${id}/data/btnfour`, 0);
-          client.subscribe(`/${id}/data/weather`, 0);
           client.subscribe(`${id}`, 0);
           client.subscribe(`/${id}/data/firmwareversion`, 0);
           MQTTClient = client;

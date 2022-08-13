@@ -11,8 +11,6 @@ import {SwipeListView} from 'react-native-swipe-list-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
-import {useSelector} from 'react-redux';
-import {ReducerRootState} from '../../redux/Reducer';
 import {SchedulParams} from '../../route/AuthContext';
 import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
 
@@ -20,8 +18,6 @@ type Nav = StackScreenProps<HomeStackParams>;
 var MQTTClient: IMqttClient;
 
 const ScheduleScreen = ({navigation, route}: Nav) => {
-  const state = useSelector((state: ReducerRootState) => state);
-
   const id: string = route?.params?.id;
 
   const switchName: Array<string> = route?.params?.switchName;
@@ -47,22 +43,22 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
       .catch(function (err) {
         console.log(err);
       });
-  }, []);
+
+    return () => mqtt.removeClient(MQTTClient);
+  }, [navigation, route]);
 
   useEffect(() => {
     firestore()
       // .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
       .collection('devices')
       .doc(id)
-      .get()
-      .then(res => {
-        if (res.exists) {
-          scheduleListSet(res?.data()?.schedule);
-        }
+      .onSnapshot(res => {
+        // console.log(res.data()?.schedule);
+        scheduleListSet(res?.data()?.schedule);
       });
 
-    return () => mqtt.removeClient(MQTTClient);
-  }, [navigation, route]);
+    console.log('id =========================', id);
+  }, []);
 
   const closeRow = (rowMap, rowKey) => {
     if (rowMap[rowKey]) {
@@ -73,28 +69,31 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
   const deleteRow = (rowMap, rowKey) => {
     closeRow(rowMap, rowKey);
 
-    if (MQTTClient != null && MQTTClient != undefined) {
+    console.log('row key', rowKey);
+
+    if (MQTTClient != null) {
       const newSchedule = scheduleList?.filter(res => {
         return res.id != rowKey;
       });
 
+      console.log(newSchedule);
+
       scheduleListSet(newSchedule);
 
-      if (MQTTClient != null && MQTTClient != undefined) {
-        try {
-          firestore()
-            // .collection(
-            //   state.auth.email !== null ? state.auth.email : state.auth.uid,
-            // )
-            .collection('devices')
-            .doc(id)
-            .update({
-              schedule: newSchedule,
-            })
-            .then(() => {
-              MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, false);
-            });
-        } catch (error) {}
+      try {
+        firestore()
+          .collection('devices')
+          .doc(id)
+          .update({
+            schedule: newSchedule,
+          })
+          .then(() => {
+            try {
+              MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, true);
+            } catch (error) {}
+          });
+      } catch (error) {
+        console.log(error);
       }
     }
   };
@@ -109,6 +108,11 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
       <SwipeListView
         data={scheduleList}
         renderItem={(data, rowMap) => {
+          console.log(
+            'output ==============================',
+            data?.item?.output,
+          );
+
           return (
             <HStack
               justifyContent={'space-between'}
@@ -229,6 +233,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                     _output: data.item.output,
                     _status: data.item.status,
                     _time: data.item.time,
+                    switchName: switchName,
                   });
                 }}
                 as={MaterialCommunityIcons}

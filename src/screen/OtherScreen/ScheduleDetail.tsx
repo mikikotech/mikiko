@@ -41,7 +41,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
   const [time, timeSet] = useState<string>('00:00');
   const [output, outputSet] = useState<string>('out1');
   const [duration, durationSet] = useState<string>('1');
-  const [every, everySet] = useState<string>('8');
+  const [every, everySet] = useState<string>('7');
   const [status, statusSet] = useState<boolean>(true);
 
   const id: string = route?.params?.id;
@@ -137,11 +137,9 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
           }}
           mt={1}
           onValueChange={val => outputSet(val)}>
-          <Select.Item label={switchName[0]} value="out1" />
-          <Select.Item label={switchName[1]} value="out2" />
-          <Select.Item label={switchName[2]} value="out3" />
-          <Select.Item label={switchName[3]} value="out4" />
-          <Select.Item label={switchName[4]} value="out5" />
+          {switchName.map((i, data) => {
+            return <Select.Item label={switchName[i]} value={`out${i + 1}`} />;
+          })}
         </Select>
       </HStack>
 
@@ -254,7 +252,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
           Every
         </Text>
         <Radio.Group
-          defaultValue="7"
+          defaultValue={'7'}
           name="myRadioGroup"
           onChange={val => {
             everySet(val);
@@ -272,7 +270,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
                 my={1}>
-                Monday
+                Sunday
               </Radio>
               <Radio
                 _text={{
@@ -284,7 +282,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
                 my={1}>
-                Sunday
+                Monday
               </Radio>
               <Radio
                 _text={{
