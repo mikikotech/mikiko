@@ -230,6 +230,7 @@ const SonoffDevice = ({
             navigation.navigate('Switch', {
               id: id,
               switchName: switchName,
+              model: model,
             });
           }}>
           {/* garden name */}

@@ -52,6 +52,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
   const [scheduleList, scheduleListSet] = useState<Array<SchedulParams>>();
 
   const id: string = route?.params?.id;
+  const model: string = route.params?.model;
   const switchName: Array<string> = route?.params?.switchName;
 
   const _output: string = route?.params?._output;
@@ -457,6 +458,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
             navigation.navigate('Schedule', {
               id: id,
               switchName: switchName,
+              model: model,
             });
           }
         }}

@@ -256,6 +256,7 @@ const DeviceList = ({
               id: id,
               weather: weather,
               switchName: switchName,
+              model: model,
             });
           }}>
           {/* garden name */}

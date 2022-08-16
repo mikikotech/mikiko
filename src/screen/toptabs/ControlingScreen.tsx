@@ -33,6 +33,8 @@ const ControlingScreen = ({navigation, route}: Nav) => {
 
   const id: string = route?.params?.id;
 
+  const model: string = route.params?.model;
+
   const switchName: Array<string> = route?.params?.switchName;
 
   useEffect(() => {
@@ -189,10 +191,11 @@ const ControlingScreen = ({navigation, route}: Nav) => {
         bottom={5}>
         <Pressable
           onPress={() => {
-            navigation.navigate('Action', {
-              id: id,
-              switchName: switchName,
-            });
+            // navigation.navigate('Action', {
+            //   id: id,
+            //   switchName: switchName,
+            //   model: model,
+            // });
           }}
           justifyContent={'center'}
           alignItems="center">
@@ -209,6 +212,7 @@ const ControlingScreen = ({navigation, route}: Nav) => {
             navigation.navigate('Schedule', {
               id: id,
               switchName: switchName,
+              model: model,
             });
           }}
           justifyContent={'center'}

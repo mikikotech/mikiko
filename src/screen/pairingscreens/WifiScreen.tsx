@@ -114,9 +114,7 @@ const WifiScreen = ({navigation}: Nav) => {
 
     RNEsptouch.initESPTouch();
 
-    return () => {
-      true;
-    };
+    // return () => RNEsptouch.finish();
   });
 
   useEffect(() => {

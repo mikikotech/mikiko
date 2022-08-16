@@ -45,7 +45,7 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
   const [status, statusSet] = useState<boolean>(true);
 
   const id: string = route?.params?.id;
-
+  const model: string = route.params?.model;
   const switchName: Array<string> = route?.params?.switchName;
 
   useLayoutEffect(() => {
@@ -70,22 +70,33 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
   }, []);
 
   useLayoutEffect(() => {
-    var splitTime: string = new Date().toLocaleTimeString();
+    var splitTime: string = new Date().toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
-    var timesplit = splitTime.split('.');
+    console.log('time ======================', splitTime);
 
-    timeSet(`${timesplit[0]}:${timesplit[1]}`);
+    // var timesplit = splitTime.split(':');
+
+    // timeSet(`${timesplit[0]}:${timesplit[1]}`);
+    timeSet(splitTime);
   }, []);
 
   const handleConfirm = time => {
     showSet(false);
-    var timesplit = time.toLocaleTimeString();
+    var timesplit = time.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
-    console.log('time = ', timesplit);
-    timesplit = timesplit.split('.');
+    // console.log('time = ', timesplit);
+    // timesplit = timesplit.split('.');
     // timesplit = timesplit[4].split(':');
 
-    timeSet(`${timesplit[0]}:${timesplit[1]}`);
+    // timeSet(`${timesplit[0]}:${timesplit[1]}`);
+
+    timeSet(timesplit);
   };
 
   return (
@@ -126,21 +137,48 @@ const ScheduleDetail = ({navigation, route}: Nav) => {
         <Text _light={{color: 'black'}} _dark={{color: FONT_INACTIVE_DARK}}>
           Button
         </Text>
-        <Select
-          selectedValue={output}
-          minWidth="200"
-          accessibilityLabel="Choose Button"
-          placeholder="Choose Button"
-          _selectedItem={{
-            bg: 'teal.600',
-            endIcon: <CheckIcon size="5" />,
-          }}
-          mt={1}
-          onValueChange={val => outputSet(val)}>
-          {switchName.map((i, data) => {
+        {model == '5CH' ? (
+          <Select
+            selectedValue={output}
+            minWidth="200"
+            accessibilityLabel="Choose Button"
+            placeholder="Choose Button"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={val => outputSet(val)}>
+            {/* {switchName.map((i, data) => {
             return <Select.Item label={switchName[i]} value={`out${i + 1}`} />;
-          })}
-        </Select>
+          })} */}
+            <Select.Item label={switchName[0]} value="out1" />
+            <Select.Item label={switchName[1]} value="out2" />
+            <Select.Item label={switchName[2]} value="out3" />
+            <Select.Item label={switchName[3]} value="out4" />
+            <Select.Item label={switchName[4]} value="out5" />
+          </Select>
+        ) : (
+          <Select
+            selectedValue={output}
+            minWidth="200"
+            accessibilityLabel="Choose Button"
+            placeholder="Choose Button"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={val => outputSet(val)}>
+            {/* {switchName.map((i, data) => {
+            return <Select.Item label={switchName[i]} value={`out${i + 1}`} />;
+          })} */}
+            <Select.Item label={switchName[0]} value="out1" />
+            <Select.Item label={switchName[1]} value="out2" />
+            <Select.Item label={switchName[2]} value="out3" />
+            <Select.Item label={switchName[3]} value="out4" />
+          </Select>
+        )}
       </HStack>
 
       {/* radio output duration */}

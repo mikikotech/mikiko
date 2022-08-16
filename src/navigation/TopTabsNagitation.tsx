@@ -137,6 +137,7 @@ const TopTabsNavigation = ({route}: NavBar) => {
         initialParams={{
           id: route?.params?.id,
           switchName: route?.params?.switchName,
+          model: route?.params?.model,
         }}
       />
       <Tab.Screen

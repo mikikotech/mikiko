@@ -20,9 +20,13 @@ var MQTTClient: IMqttClient;
 const ScheduleScreen = ({navigation, route}: Nav) => {
   const id: string = route?.params?.id;
 
+  const model: string = route.params?.model;
+
   const switchName: Array<string> = route?.params?.switchName;
 
   const [scheduleList, scheduleListSet] = useState<Array<SchedulParams>>();
+
+  console.log('model ====================================', model);
 
   useLayoutEffect(() => {
     mqtt
@@ -234,6 +238,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                     _status: data.item.status,
                     _time: data.item.time,
                     switchName: switchName,
+                    model: model,
                   });
                 }}
                 as={MaterialCommunityIcons}
@@ -272,6 +277,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
           navigation.navigate('Scheduledetail', {
             id: id,
             switchName: switchName,
+            model: model,
           });
         }}
         size="sm"

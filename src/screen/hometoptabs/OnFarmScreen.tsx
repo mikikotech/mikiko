@@ -28,6 +28,7 @@ import {
 } from '../../utils/constanta';
 import {deviceList} from './GreenHouseScreen';
 import {LogBox} from 'react-native';
+import SonoffDevice from '../../components/SonoffDevice';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -91,15 +92,27 @@ const OnFarmScreen = ({navigation}: Nav) => {
 
             return (
               <Box>
-                <DeviceList
-                  gardenName={item._data.gardenName}
-                  id={item._data.id}
-                  location={item._data.location}
-                  shared={false}
-                  scene={item._data.scene}
-                  model={item._data.model}
-                  switchName={item._data.switchName}
-                />
+                {item._data.model == '5CH' ? (
+                  <DeviceList
+                    gardenName={item._data.gardenName}
+                    id={item._data.id}
+                    location={item._data.location}
+                    shared={false}
+                    scene={item._data.scene}
+                    model={item._data.model}
+                    switchName={item._data.switchName}
+                  />
+                ) : item._data.model == '4CH' ? (
+                  <SonoffDevice
+                    gardenName={item._data.gardenName}
+                    id={item._data.id}
+                    location={item._data.location}
+                    shared={false}
+                    scene={item._data.scene}
+                    model={item._data.model}
+                    switchName={item._data.switchName}
+                  />
+                ) : null}
               </Box>
             );
           }}
