@@ -274,7 +274,12 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
         shadow={2}
         bg={PRIMARY_COLOR}
         onPress={() => {
-          navigation.navigate('Scheduledetail', {
+          // navigation.navigate('Scheduledetail', {
+          //   id: id,
+          //   switchName: switchName,
+          //   model: model,
+          // });
+          navigation.navigate('Newscheduledetail', {
             id: id,
             switchName: switchName,
             model: model,
