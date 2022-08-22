@@ -26,9 +26,8 @@ import firestore from '@react-native-firebase/firestore';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
-import AuthContex, {SchedulParams} from '../../route/AuthContext';
+import {SchedulParams, NewSchedulParams} from '../../route/AuthContext';
 import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
-import AndroidToast from '../../utils/AndroidToast';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -39,7 +38,7 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
   const [show, showSet] = useState<boolean>(false);
   const [time, timeSet] = useState<string>('00:00');
   const [output, outputSet] = useState<string>('out1');
-  const [duration, durationSet] = useState<string>('1');
+  const [state, stateSet] = useState<string>('true');
   const [everySelect, everySelectSet] = useState<string>('week');
   const [every, everySet] = useState<Array<string>>([]);
   const [months, mounthSet] = useState<Array<string>>([]);
@@ -210,7 +209,7 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
           )}
         </HStack>
 
-        {/* radio output duration */}
+        {/* radio output state */}
 
         <HStack
           py={3}
@@ -219,90 +218,38 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
           borderBottomWidth={0.8}
           borderBottomColor="gray.300">
           <Text _light={{color: 'black'}} _dark={{color: FONT_INACTIVE_DARK}}>
-            Duration
+            State
           </Text>
           <Radio.Group
-            defaultValue="1"
+            defaultValue="true"
             name="myRadioGroup"
-            onChange={val => durationSet(val)}
+            onChange={val => stateSet(val)}
             accessibilityLabel="Pick your favorite number">
             <HStack space={2}>
-              <VStack>
-                <Radio
-                  value="1"
-                  _text={{
-                    _light: {color: FONT_ACTIVE_LIGHT},
-                    _dark: {color: FONT_INACTIVE_DARK},
-                  }}
-                  colorScheme="green"
-                  _dark={{backgroundColor: BG_DARK}}
-                  size="sm"
-                  my={1}>
-                  1 minutes
-                </Radio>
-                <Radio
-                  _text={{
-                    _light: {color: FONT_ACTIVE_LIGHT},
-                    _dark: {color: FONT_INACTIVE_DARK},
-                  }}
-                  value="2"
-                  colorScheme="green"
-                  _dark={{backgroundColor: BG_DARK}}
-                  size="sm"
-                  my={1}>
-                  2 minutes
-                </Radio>
-                <Radio
-                  _text={{
-                    _light: {color: FONT_ACTIVE_LIGHT},
-                    _dark: {color: FONT_INACTIVE_DARK},
-                  }}
-                  value="3"
-                  colorScheme="green"
-                  _dark={{backgroundColor: BG_DARK}}
-                  size="sm"
-                  my={1}>
-                  3 minutes
-                </Radio>
-              </VStack>
-              <VStack>
-                <Radio
-                  _text={{
-                    _light: {color: FONT_ACTIVE_LIGHT},
-                    _dark: {color: FONT_INACTIVE_DARK},
-                  }}
-                  value="5"
-                  colorScheme="green"
-                  _dark={{backgroundColor: BG_DARK}}
-                  size="sm"
-                  my={1}>
-                  5 minutes
-                </Radio>
-                <Radio
-                  _text={{
-                    _light: {color: FONT_ACTIVE_LIGHT},
-                    _dark: {color: FONT_INACTIVE_DARK},
-                  }}
-                  value="7"
-                  colorScheme="green"
-                  _dark={{backgroundColor: BG_DARK}}
-                  size="sm"
-                  my={1}>
-                  7 minutes
-                </Radio>
-                <Radio
-                  _text={{
-                    _light: {color: FONT_ACTIVE_LIGHT},
-                    _dark: {color: FONT_INACTIVE_DARK},
-                  }}
-                  value="10"
-                  colorScheme="green"
-                  _dark={{backgroundColor: BG_DARK}}
-                  size="sm"
-                  my={1}>
-                  10 minutes
-                </Radio>
-              </VStack>
+              <Radio
+                value="true"
+                _text={{
+                  _light: {color: FONT_ACTIVE_LIGHT},
+                  _dark: {color: FONT_INACTIVE_DARK},
+                }}
+                colorScheme="green"
+                _dark={{backgroundColor: BG_DARK}}
+                size="sm"
+                my={1}>
+                ON
+              </Radio>
+              <Radio
+                _text={{
+                  _light: {color: FONT_ACTIVE_LIGHT},
+                  _dark: {color: FONT_INACTIVE_DARK},
+                }}
+                value="false"
+                colorScheme="green"
+                _dark={{backgroundColor: BG_DARK}}
+                size="sm"
+                my={1}>
+                OFF
+              </Radio>
             </HStack>
           </Radio.Group>
         </HStack>
@@ -633,13 +580,15 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
           bg={PRIMARY_COLOR}
           onPress={() => {
             if (MQTTClient != null && MQTTClient != undefined) {
-              var newSchedule: SchedulParams = {
+              var cronString: string = cron.join(' ');
+
+              var newSchedule: NewSchedulParams = {
+                cron: cronString,
                 output: output,
-                duration: Number(duration),
-                every: Number(every),
+                state: state == 'true' ? true : false,
                 status: status,
+                repeat: repeat == 'once' ? true : false,
                 id: Math.random().toString(),
-                time,
               };
 
               firestore()
@@ -655,10 +604,10 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
                   MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, true);
                 });
 
-              navigation.navigate('Schedule', {
-                id: id,
-                switchName: switchName,
-              });
+              // navigation.navigate('Schedule', {
+              //   id: id,
+              //   switchName: switchName,
+              // });
             }
           }}
           _text={{

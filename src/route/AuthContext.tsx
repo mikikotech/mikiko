@@ -39,6 +39,15 @@ export interface SchedulParams {
   status: boolean;
 }
 
+export interface NewSchedulParams {
+  id: string;
+  output: string;
+  cron: string;
+  state: boolean;
+  repeat: boolean;
+  status: boolean;
+}
+
 export interface ActionsParams {
   if: string;
   output: string;

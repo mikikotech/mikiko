@@ -57,8 +57,8 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
       .collection('devices')
       .doc(id)
       .onSnapshot(res => {
-        // console.log(res.data()?.schedule);
-        scheduleListSet(res?.data()?.schedule);
+        console.log(res.data()?.schedule);
+        // scheduleListSet(res?.data()?.schedule);
       });
 
     console.log('id =========================', id);
