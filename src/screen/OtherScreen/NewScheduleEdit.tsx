@@ -558,7 +558,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
 
         {/* safasfas */}
 
-        {/* <Button
+        <Button
           onPress={() => {
             // var cronString: string = cron.join(' ');
             // var data = `${cronString}:${output}:${state}:${
@@ -568,12 +568,12 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
             console.log(every);
           }}>
           print schedule data
-        </Button> */}
+        </Button>
 
         {/* button save */}
 
         <Button
-          mt={20}
+          mt={ITEM_HEIGHT_H3}
           bg={PRIMARY_COLOR}
           onPress={() => {
             if (MQTTClient != null && MQTTClient != undefined) {

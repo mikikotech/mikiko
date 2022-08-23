@@ -6,6 +6,7 @@ import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
 import ControlButton from '../../components/ControlButton';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
 import {BG_DARK, BG_LIGHT, PRIMARY_COLOR} from '../../utils/constanta';
+import Loader from 'react-native-modal-loader';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -16,6 +17,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
   const [btntwo, btntwoSet] = useState(false);
   const [btnthree, btnthreeSet] = useState(false);
   const [btnfour, btnfourSet] = useState(false);
+  const [isLogin, setIsLogin] = useState<boolean>(false);
 
   let state: Array<{path: string; status: boolean}> = [];
 
@@ -81,6 +83,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
           client.subscribe(`/${id}/data/btnfour`, 0);
           client.subscribe(`/${id}/data/btnfive`, 0);
           MQTTClient = client;
+          setIsLogin(true);
         });
 
         client.connect();
@@ -90,15 +93,8 @@ const SwitchScreen = ({navigation, route}: Nav) => {
       });
   }, [navigation]);
 
-  if (MQTTClient == undefined)
-    return (
-      <Box
-        flex={1}
-        width="100%"
-        _light={{bg: BG_LIGHT}}
-        _dark={{bg: BG_DARK}}
-      />
-    );
+  if (isLogin == false)
+    return <Loader loading={!isLogin} opacity={0.6} color={PRIMARY_COLOR} />;
 
   return (
     <Center flex={1} _light={{bg: BG_LIGHT}} _dark={{bg: BG_DARK}}>

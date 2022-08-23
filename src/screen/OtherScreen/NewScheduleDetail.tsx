@@ -38,11 +38,11 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
   const [show, showSet] = useState<boolean>(false);
   const [time, timeSet] = useState<string>('00:00');
   const [output, outputSet] = useState<string>('out1');
-  const [state, stateSet] = useState<string>('true');
+  const [state, stateSet] = useState<string>('1');
   const [everySelect, everySelectSet] = useState<string>('week');
   const [every, everySet] = useState<Array<string>>([]);
   const [months, mounthSet] = useState<Array<string>>([]);
-  const [repeat, repeatSet] = useState<string>('once');
+  // const [repeat, repeatSet] = useState<string>('1');
   const [status, statusSet] = useState<boolean>(true);
   const [cron, cronSet] = useState<Array<string>>([
     '0',
@@ -221,13 +221,13 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
             State
           </Text>
           <Radio.Group
-            defaultValue="true"
+            defaultValue={state}
             name="myRadioGroup"
             onChange={val => stateSet(val)}
             accessibilityLabel="Pick your favorite number">
             <HStack space={2}>
               <Radio
-                value="true"
+                value="1"
                 _text={{
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
@@ -243,7 +243,7 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
                   _light: {color: FONT_ACTIVE_LIGHT},
                   _dark: {color: FONT_INACTIVE_DARK},
                 }}
-                value="false"
+                value="0"
                 colorScheme="green"
                 _dark={{backgroundColor: BG_DARK}}
                 size="sm"
@@ -508,7 +508,7 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
 
         {/* repeat */}
 
-        <HStack
+        {/* <HStack
           py={3}
           alignItems={'center'}
           justifyContent="space-between"
@@ -531,10 +531,10 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
             onValueChange={val => {
               repeatSet(val);
             }}>
-            <Select.Item label={'once'} value="once" />
-            <Select.Item label={'repeat'} value="repeat" />
+            <Select.Item label={'once'} value="1" />
+            <Select.Item label={'repeat'} value="0" />
           </Select>
-        </HStack>
+        </HStack> */}
 
         {/* status */}
 
@@ -557,38 +557,35 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
 
         {/* safasfas */}
 
-        <Button
+        {/* <Button
           onPress={() => {
-            // if (every.length == 0 || months.length == 0) {
-            //   AndroidToast.toast('value cant be empty');
-            // } else {
-            //   console.log(cron);
-            //   var cronString: string = cron.join(' ');
-            //   console.log('cron formated', cronString);
-            // }
-            console.log(cron);
             var cronString: string = cron.join(' ');
-            console.log('cron formated', cronString);
+
+            var data = `${cronString}:${output}:${state}:${
+              status == true ? 1 : 0
+            }`;
+
+            console.log('schedule data', data);
           }}>
-          print cron
-        </Button>
+          print schedule data
+        </Button> */}
 
         {/* button save */}
 
         <Button
-          mt={12}
+          mt={20}
           bg={PRIMARY_COLOR}
           onPress={() => {
             if (MQTTClient != null && MQTTClient != undefined) {
               var cronString: string = cron.join(' ');
 
+              var data = `${cronString}:${output}:${state}:${
+                status == true ? 1 : 0
+              }`;
+
               var newSchedule: NewSchedulParams = {
-                cron: cronString,
-                output: output,
-                state: state == 'true' ? true : false,
-                status: status,
-                repeat: repeat == 'once' ? true : false,
-                id: Math.random().toString(),
+                data: data,
+                id: Date.now().toString(24),
               };
 
               firestore()
@@ -604,10 +601,10 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
                   MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, true);
                 });
 
-              // navigation.navigate('Schedule', {
-              //   id: id,
-              //   switchName: switchName,
-              // });
+              navigation.navigate('Schedule', {
+                id: id,
+                switchName: switchName,
+              });
             }
           }}
           _text={{

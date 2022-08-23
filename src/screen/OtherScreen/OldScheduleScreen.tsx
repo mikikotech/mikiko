@@ -11,9 +11,8 @@ import {SwipeListView} from 'react-native-swipe-list-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
-import {NewSchedulParams, SchedulParams} from '../../route/AuthContext';
+import {SchedulParams} from '../../route/AuthContext';
 import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
-import AndroidToast from '../../utils/AndroidToast';
 
 type Nav = StackScreenProps<HomeStackParams>;
 var MQTTClient: IMqttClient;
@@ -25,8 +24,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
 
   const switchName: Array<string> = route?.params?.switchName;
 
-  // const [scheduleList, scheduleListSet] = useState<Array<SchedulParams>>();
-  const [scheduleList, scheduleListSet] = useState<Array<NewSchedulParams>>();
+  const [scheduleList, scheduleListSet] = useState<Array<SchedulParams>>();
 
   console.log('model ====================================', model);
 
@@ -59,8 +57,8 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
       .collection('devices')
       .doc(id)
       .onSnapshot(res => {
-        // console.log(res.data()?.schedule);
-        scheduleListSet(res?.data()?.schedule);
+        console.log(res.data()?.schedule);
+        // scheduleListSet(res?.data()?.schedule);
       });
 
     console.log('id =========================', id);
@@ -116,56 +114,8 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
         renderItem={(data, rowMap) => {
           console.log(
             'output ==============================',
-            data?.item?.data,
+            data?.item?.output,
           );
-
-          var id = data?.item?.id;
-          var dataSplit = data?.item?.data.split(':');
-          var cronSplit = dataSplit[0].split(' ');
-          var time = `${cronSplit[2]}:${cronSplit[1]}`;
-          var every;
-          var everyWeek;
-
-          console.log(cronSplit[5]);
-
-          if (cronSplit[5].length > 1) {
-            var daySplit = cronSplit[5].split(',');
-
-            var customEvery: Array<string> = [];
-
-            for (var i = 0; i < daySplit.length; i++) {
-              console.log('day = ', daySplit[i]);
-
-              if (daySplit[i] == '0') {
-                customEvery.push('Sun');
-              } else if (daySplit[i] == '1') {
-                customEvery.push('Mon');
-                console.log(1);
-              } else if (daySplit[i] == '2') {
-                customEvery.push('Tue');
-                console.log(2);
-              } else if (daySplit[i] == '3') {
-                customEvery.push('Wed');
-                console.log(3);
-              } else if (daySplit[i] == '4') {
-                customEvery.push('Thus');
-              } else if (daySplit[i] == '5') {
-                customEvery.push('Fri');
-              } else if (daySplit[i] == '6') {
-                customEvery.push('Sat');
-              }
-            }
-
-            console.log('custom very week = ', customEvery);
-
-            every = 'w';
-            everyWeek = `Every ${customEvery.join(',')}`;
-          } else {
-            every = cronSplit[3];
-          }
-          var output = dataSplit[1];
-          var state = dataSplit[2] == '1' ? 'ON' : 'OFF';
-          var status = dataSplit[3] == '1' ? true : false;
 
           return (
             <HStack
@@ -180,51 +130,54 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                 <HStack space={2}>
                   <Text>
                     {'At  '}
-                    {time}
+                    {data.item.time}
                   </Text>
                   <Text>
-                    {every == '0'
+                    {data.item.every == 1
                       ? 'Every  monday'
-                      : every == '1'
+                      : data.item.every == 2
                       ? 'Every  tuesday'
-                      : every == '2'
+                      : data.item.every == 3
                       ? 'Every  wednesday'
-                      : every == '3'
+                      : data.item.every == 4
                       ? 'Every  thursday'
-                      : every == '4'
+                      : data.item.every == 5
                       ? 'Every  friday'
-                      : every == '5'
+                      : data.item.every == 6
                       ? 'Every  saturday'
-                      : every == '6'
+                      : data.item.every == 7
                       ? 'Every  sunday'
-                      : every == '*'
-                      ? 'Everyday'
-                      : everyWeek}
+                      : 'Everyday'}
                   </Text>
                 </HStack>
                 <HStack space={2}>
                   <Text>
-                    {output == 'out1'
+                    {data.item.output == 'out1'
                       ? switchName[0]
-                      : output == 'out2'
+                      : data.item.output == 'out2'
                       ? switchName[1]
-                      : output == 'out3'
+                      : data.item.output == 'out3'
                       ? switchName[2]
-                      : output == 'out4'
+                      : data.item.output == 'out4'
                       ? switchName[3]
                       : switchName[4]}
+                    {'  ON'}
                   </Text>
-                  <Text>{state}</Text>
+                  <Text>
+                    {'for  '}
+                    {data.item.duration}
+                    {' Minutes'}
+                  </Text>
                 </HStack>
               </VStack>
               <Switch
                 onThumbColor={PRIMARY_COLOR}
                 onTrackColor={SECONDARY_COLOR}
                 onChange={() => {
-                  var state: boolean = status;
+                  var state: boolean = data.item.status;
                   if (MQTTClient != null && MQTTClient != undefined) {
                     const newSchedule = scheduleList?.map(res => {
-                      if (res.id == id) {
+                      if (res.id == data.item.id) {
                         return {...res, status: !state};
                       }
 
@@ -256,7 +209,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                     } catch (error) {}
                   }
                 }}
-                value={status}
+                value={data.item.status}
               />
             </HStack>
           );
@@ -278,15 +231,14 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                 onPress={() => {
                   navigation.navigate('Scheduleedit', {
                     id: id,
+                    _duration: data.item.duration,
                     _id: data.item.id,
-                    _data: data.item.data,
+                    _every: data.item.every,
+                    _output: data.item.output,
+                    _status: data.item.status,
+                    _time: data.item.time,
                     switchName: switchName,
                     model: model,
-                    // _duration: data.item.duration,
-                    // _every: data.item.every,
-                    // _output: data.item.output,
-                    // _status: data.item.status,
-                    // _time: data.item.time,
                   });
                 }}
                 as={MaterialCommunityIcons}
@@ -327,18 +279,11 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
           //   switchName: switchName,
           //   model: model,
           // });
-
-          console.log(scheduleList.length);
-
-          if (scheduleList.length != 8) {
-            navigation.navigate('Newscheduledetail', {
-              id: id,
-              switchName: switchName,
-              model: model,
-            });
-          } else {
-            AndroidToast.toast('Max Schedule');
-          }
+          navigation.navigate('Newscheduledetail', {
+            id: id,
+            switchName: switchName,
+            model: model,
+          });
         }}
         size="sm"
         icon={

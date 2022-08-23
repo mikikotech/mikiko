@@ -93,7 +93,8 @@ const SettingsUpScreen = ({navigation, route}: Nav) => {
       socket.once('listening', function () {
         myInterval = setInterval(() => {
           socket.send(
-            state.auth.email !== null ? state.auth.email : state.auth.uid, // message sent
+            // state.auth.email !== null ? state.auth.email : state.auth.uid, // message sent
+            ((new Date().getTimezoneOffset() / 60) * -1).toString(),
             undefined,
             undefined,
             2255,
