@@ -7,6 +7,7 @@ import ControlButton from '../../components/ControlButton';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
 import {BG_DARK, BG_LIGHT, PRIMARY_COLOR} from '../../utils/constanta';
 import Loader from 'react-native-modal-loader';
+import AndroidToast from '../../utils/AndroidToast';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -17,7 +18,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
   const [btntwo, btntwoSet] = useState(false);
   const [btnthree, btnthreeSet] = useState(false);
   const [btnfour, btnfourSet] = useState(false);
-  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isLoad, isLoadSet] = useState<boolean>(false);
 
   let state: Array<{path: string; status: boolean}> = [];
 
@@ -74,6 +75,7 @@ const SwitchScreen = ({navigation, route}: Nav) => {
             }
           }
           // }
+          isLoadSet(true);
         });
 
         client.on('connect', function () {
@@ -83,7 +85,6 @@ const SwitchScreen = ({navigation, route}: Nav) => {
           client.subscribe(`/${id}/data/btnfour`, 0);
           client.subscribe(`/${id}/data/btnfive`, 0);
           MQTTClient = client;
-          setIsLogin(true);
         });
 
         client.connect();
@@ -93,8 +94,8 @@ const SwitchScreen = ({navigation, route}: Nav) => {
       });
   }, [navigation]);
 
-  if (isLogin == false)
-    return <Loader loading={!isLogin} opacity={0.6} color={PRIMARY_COLOR} />;
+  if (isLoad == false)
+    return <Loader loading={!isLoad} opacity={0.6} color={PRIMARY_COLOR} />;
 
   return (
     <Center flex={1} _light={{bg: BG_LIGHT}} _dark={{bg: BG_DARK}}>
@@ -169,16 +170,17 @@ const SwitchScreen = ({navigation, route}: Nav) => {
             //   switchName: switchName,
             //   model: model,
             // });
+            AndroidToast.toast('coming soon');
           }}
           justifyContent={'center'}
           alignItems="center">
           <Icon
             as={MaterialCommunityIcons}
-            name="clock-edit-outline"
+            name="timer-settings-outline"
             size={10}
             color={PRIMARY_COLOR}
           />
-          <Text mt={1}>Action</Text>
+          <Text mt={1}>Loop Timer</Text>
         </Pressable>
         <Pressable
           onPress={() => {

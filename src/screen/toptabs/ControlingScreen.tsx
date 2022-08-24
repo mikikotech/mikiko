@@ -6,6 +6,7 @@ import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
 import ControlButton from '../../components/ControlButton';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
 import {BG_DARK, BG_LIGHT, PRIMARY_COLOR} from '../../utils/constanta';
+import Loader from 'react-native-modal-loader';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -17,7 +18,7 @@ const ControlingScreen = ({navigation, route}: Nav) => {
   const [btnthree, btnthreeSet] = useState(false);
   const [btnfour, btnfourSet] = useState(false);
   const [btnfive, btnfiveSet] = useState(false);
-  const [isLoading, isLoadingSet] = useState(true);
+  const [isLoad, isLoadSet] = useState<boolean>(false);
 
   let state: Array<{path: string; status: boolean}> = [];
 
@@ -47,39 +48,39 @@ const ControlingScreen = ({navigation, route}: Nav) => {
         client.on('message', function (msg) {
           // console.log('mqtt.event.message', msg);
 
-          if (isLoading) {
-            if (msg.topic == `/${id}/data/btnone`) {
-              if (msg.data == 'true') {
-                btnoneSet(true);
-              } else {
-                btnoneSet(false);
-              }
-            } else if (msg.topic == `/${id}/data/btntwo`) {
-              if (msg.data == 'true') {
-                btntwoSet(true);
-              } else {
-                btntwoSet(false);
-              }
-            } else if (msg.topic == `/${id}/data/btnthree`) {
-              if (msg.data == 'true') {
-                btnthreeSet(true);
-              } else {
-                btnthreeSet(false);
-              }
-            } else if (msg.topic == `/${id}/data/btnfour`) {
-              if (msg.data == 'true') {
-                btnfourSet(true);
-              } else {
-                btnfourSet(false);
-              }
-            } else if (msg.topic == `/${id}/data/btnfive`) {
-              if (msg.data == 'true') {
-                btnfiveSet(true);
-              } else {
-                btnfiveSet(false);
-              }
+          if (msg.topic == `/${id}/data/btnone`) {
+            if (msg.data == 'true') {
+              btnoneSet(true);
+            } else {
+              btnoneSet(false);
+            }
+          } else if (msg.topic == `/${id}/data/btntwo`) {
+            if (msg.data == 'true') {
+              btntwoSet(true);
+            } else {
+              btntwoSet(false);
+            }
+          } else if (msg.topic == `/${id}/data/btnthree`) {
+            if (msg.data == 'true') {
+              btnthreeSet(true);
+            } else {
+              btnthreeSet(false);
+            }
+          } else if (msg.topic == `/${id}/data/btnfour`) {
+            if (msg.data == 'true') {
+              btnfourSet(true);
+            } else {
+              btnfourSet(false);
+            }
+          } else if (msg.topic == `/${id}/data/btnfive`) {
+            if (msg.data == 'true') {
+              btnfiveSet(true);
+            } else {
+              btnfiveSet(false);
             }
           }
+
+          isLoadSet(true);
         });
 
         client.on('connect', function () {
@@ -96,25 +97,10 @@ const ControlingScreen = ({navigation, route}: Nav) => {
       .catch(function (err) {
         console.log(err);
       });
-
-    return () => isLoadingSet(true);
   }, [navigation]);
 
-  useEffect(() => {
-    isLoadingSet(false);
-
-    return () => isLoadingSet(true);
-  }, []);
-
-  if (MQTTClient == undefined)
-    return (
-      <Box
-        flex={1}
-        width="100%"
-        _light={{bg: BG_LIGHT}}
-        _dark={{bg: BG_DARK}}
-      />
-    );
+  if (isLoad == false)
+    return <Loader loading={!isLoad} opacity={0.6} color={PRIMARY_COLOR} />;
 
   return (
     <Center flex={1} _light={{bg: BG_LIGHT}} _dark={{bg: BG_DARK}}>

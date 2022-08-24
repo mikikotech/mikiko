@@ -120,11 +120,23 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
 
   const handleConfirm = time => {
     showSet(false);
-    var timesplit = time.toLocaleTimeString();
-    timesplit = timesplit.split('.');
-    // timesplit = timesplit[4].split(':');
+    var splitTime = time.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
-    timeSet(`${timesplit[0]}:${timesplit[1]}`);
+    var timeSplit = splitTime.split(':');
+
+    cronSet(oldValue => {
+      const copy = [...oldValue];
+
+      copy[1] = timeSplit[1];
+      copy[2] = timeSplit[0];
+
+      return copy;
+    });
+
+    timeSet(splitTime);
   };
 
   return (
@@ -579,7 +591,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
             if (MQTTClient != null && MQTTClient != undefined) {
               var cronString: string = cron.join(' ');
 
-              var data = `${cronString}:${output}:${state}:${
+              var dataEdit = `${cronString}:${output}:${state}:${
                 status == true ? 1 : 0
               }`;
               const newScheduleEdit = scheduleList?.map(res => {
@@ -588,11 +600,13 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
                 if (res.id == _id) {
                   return {
                     ...res,
-                    data: data,
+                    data: dataEdit,
                   };
                 }
                 return res;
               });
+
+              console.log('new schedule ===', newScheduleEdit);
 
               firestore()
                 .collection('devices')

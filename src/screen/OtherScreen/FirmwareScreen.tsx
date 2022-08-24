@@ -16,9 +16,11 @@ var MQTTClient: IMqttClient;
 const FirmwareScreen = ({route, navigation}: Nav) => {
   const [versionUpdate, versionUpdateSet] = useState<boolean>(false);
   const [targetVersion, targetVersionSet] = useState<string>('');
+  const [updateStatus, updateStatusSet] = useState<string>('');
   const [show, setShow] = useState<boolean>(false);
 
   const id = route?.params?.id;
+  const model = route?.params?.model;
 
   useLayoutEffect(() => {
     mqtt
@@ -31,9 +33,14 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
 
         client.on('error', function (msg) {});
 
-        client.on('message', function (msg) {});
+        client.on('message', function (msg) {
+          if (msg.topic == `/${id}/data/otarespone`) {
+            updateStatusSet(msg.data);
+          }
+        });
 
         client.on('connect', function () {
+          client.subscribe(`/${id}/data/otarespone`, 0);
           MQTTClient = client;
         });
 
@@ -45,7 +52,8 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
   });
 
   useLayoutEffect(() => {
-    const reference = storage().ref('/MTH/');
+    const reference =
+      model == '5CH' ? storage().ref('/MTH/') : storage().ref('/SONMIKIKO/');
     reference.listAll().then(res => {
       console.log('firebase storage ==== ', res.items[0].name);
 
@@ -106,7 +114,7 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
           borderBottomColor="gray.300">
           <Text>Check Update</Text>
           <HStack>
-            {versionUpdate ? (
+            {versionUpdate && updateStatus.length == 0 ? (
               <Box
                 justifyContent={'center'}
                 alignItems="center"
@@ -116,7 +124,11 @@ const FirmwareScreen = ({route, navigation}: Nav) => {
                 rounded="full">
                 <Text>1</Text>
               </Box>
-            ) : null}
+            ) : updateStatus == 'start' ? (
+              <Text>Downloading Firmware</Text>
+            ) : (
+              <Text>Updated</Text>
+            )}
             <Icon as={MaterialCommunityIcons} name="chevron-right" />
           </HStack>
         </HStack>

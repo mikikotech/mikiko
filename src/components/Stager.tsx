@@ -110,6 +110,7 @@ const StaggerView = ({
             Nav.navigate('Firmware', {
               id,
               version,
+              model,
             });
           }}>
           Update Firmware

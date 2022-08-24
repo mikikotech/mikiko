@@ -16,7 +16,6 @@ import {ReducerRootState} from '../../redux/Reducer';
 import {
   BG_DARK,
   BG_LIGHT,
-  FONT_DESC,
   FONT_INACTIVE_DARK,
   PRIMARY_COLOR,
   TAB_BAR_HEIGHT,
@@ -25,6 +24,7 @@ import firestore from '@react-native-firebase/firestore';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
 import AndroidToast from '../../utils/AndroidToast';
+import Loader from 'react-native-modal-loader';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
@@ -34,22 +34,19 @@ const EditDeviceScreen = ({navigation, route}: Nav) => {
   const [deviceName, deviceNameSet] = useState<string>('');
   const [scene, sceneSet] = useState<string>('');
   const [bssid, bssidSet] = useState<string>('');
-  const [switch1, setSwitch1] = useState<string>('');
-  const [switch2, setSwitch2] = useState<string>('');
-  const [switch3, setSwitch3] = useState<string>('');
-  const [switch4, setSwitch4] = useState<string>('');
-  const [switch5, setSwitch5] = useState<string>('');
+  const [switchName, switchNameSet] = useState<Array<string>>([]);
+  const [isLoad, isLoadSet] = useState<boolean>(false);
 
   useEffect(() => {
     bssidSet(route?.params?.id);
     deviceNameSet(route?.params?.gardenName);
     sceneSet(route?.params?.scene);
-    setSwitch1(route?.params?.switchName[0]);
-    setSwitch2(route?.params?.switchName[1]);
-    setSwitch3(route?.params?.switchName[2]);
-    setSwitch4(route?.params?.switchName[3]);
-    setSwitch5(route?.params?.switchName[4]);
+    switchNameSet(route?.params?.switchName);
+    isLoadSet(true);
   }, []);
+
+  if (isLoad == false)
+    return <Loader loading={!isLoad} opacity={0.6} color={PRIMARY_COLOR} />;
 
   return (
     <Center flex={1} _dark={{bg: BG_DARK}} _light={{bg: BG_LIGHT}}>
@@ -113,7 +110,29 @@ const EditDeviceScreen = ({navigation, route}: Nav) => {
                 Rename Switch
               </FormControl.Label>
               <VStack space={2}>
-                <Input
+                {switchName.map((val, i) => {
+                  return (
+                    <Input
+                      key={i}
+                      value={val}
+                      onChangeText={val => {
+                        if (val.length < 10) {
+                          // setSwitch1(val);
+                          switchNameSet(oldVal => {
+                            const copy = [...oldVal];
+                            copy[i] = val;
+
+                            return copy;
+                          });
+                        } else {
+                          AndroidToast.toast('max name length');
+                        }
+                      }}
+                      placeholder="Switch 1 name"
+                    />
+                  );
+                })}
+                {/* <Input
                   value={switch1}
                   onChangeText={val => {
                     if (val.length < 10) {
@@ -167,7 +186,7 @@ const EditDeviceScreen = ({navigation, route}: Nav) => {
                     }
                   }}
                   placeholder="Switch 5 name"
-                />
+                /> */}
               </VStack>
             </FormControl>
 
@@ -193,7 +212,7 @@ const EditDeviceScreen = ({navigation, route}: Nav) => {
                   .update({
                     gardenName: deviceName,
                     scene: scene,
-                    switchName: [switch1, switch2, switch3, switch4, switch5],
+                    switchName: switchName,
                   })
                   .then(() => {
                     navigation.goBack();

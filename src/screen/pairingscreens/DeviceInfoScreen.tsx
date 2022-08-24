@@ -31,13 +31,6 @@ import {BottomTabsParams} from '../../navigation/BottomTabsNavigation';
 
 type Nav = BottomTabScreenProps<any>;
 
-type deviceAdd = {
-  gardenName: string;
-  location: string;
-  id: string;
-  scene: string;
-};
-
 const DeviceInfoScreen = ({navigation, route}: Nav) => {
   const state = useSelector((state: ReducerRootState) => state);
 
@@ -106,7 +99,7 @@ const DeviceInfoScreen = ({navigation, route}: Nav) => {
     const deviceId = device.split(':');
     modeSet(deviceId[1]);
 
-    deviceNameSet(`${deviceId[2]}${deviceId[1]}`);
+    deviceNameSet(`${deviceId[3]}${deviceId[2]}`);
     bssidSet(route?.params?.bssid ?? '');
 
     if (loc == undefined || loc == null) {
