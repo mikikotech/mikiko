@@ -148,7 +148,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                 customEvery.push('Wed');
                 console.log(3);
               } else if (daySplit[i] == '4') {
-                customEvery.push('Thus');
+                customEvery.push('Thu');
               } else if (daySplit[i] == '5') {
                 customEvery.push('Fri');
               } else if (daySplit[i] == '6') {
