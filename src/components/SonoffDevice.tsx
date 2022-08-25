@@ -11,7 +11,6 @@ import {
 import React, {useEffect, useState} from 'react';
 import {Vibration} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon from 'react-native-vector-icons/FontAwesome5';
 import StaggerView from './Stager';
 import MQTT, {IMqttClient} from 'sp-react-native-mqtt';
 import {useNavigation} from '@react-navigation/native';
@@ -56,28 +55,18 @@ const SonoffDevice = ({
 }: Props) => {
   const navigation = useNavigation<any>();
 
-  const [isLoading, isLoadingSet] = useState(true);
+  const [buttonState, buttonStateSet] = useState<Array<string>>([
+    'false',
+    'false',
+    'false',
+    'false',
+    'false',
+  ]);
   const [isConnected, isConnectedSet] = useState('true');
-  const [channel1, channel1Set] = useState('false');
-  const [channel2, channel2Set] = useState('false');
-  const [channel3, channel3Set] = useState('false');
-  const [channel4, channel4Set] = useState('false');
+  const [isLoad, isLoadSet] = useState<boolean>(false);
   const [firmwareVersion, firmwareVersionSet] = useState('');
 
   useEffect(() => {
-    navigation.addListener('focus', () => {
-      isLoadingSet(true);
-    });
-
-    const unsubscribe = NetInfo.addEventListener(state => {
-      console.log('Connection type', state.type);
-      console.log('Is connected?', state.isConnected);
-
-      if (MQTTClient != null) {
-        MQTTClient.reconnect();
-      }
-    });
-
     MQTT.createClient({
       uri: 'mqtt://broker.hivemq.com:1883',
       clientId: `${id}qwert`,
@@ -95,26 +84,56 @@ const SonoffDevice = ({
           }
 
           // if (isLoading) {
-          if (msg.topic == `/${id}/data/btnone`) {
-            channel1Set(msg.data);
-          } else if (msg.topic == `/${id}/data/btntwo`) {
-            channel2Set(msg.data);
-          } else if (msg.topic == `/${id}/data/btnthree`) {
-            channel3Set(msg.data);
-          } else if (msg.topic == `/${id}/data/btnfour`) {
-            channel4Set(msg.data);
+          if (msg.topic == `/${id}/data/btn1`) {
+            buttonStateSet(oldVal => {
+              const copy = [...oldVal];
+
+              copy[1] = msg.data;
+
+              return copy;
+            });
+            // channel1Set(msg.data);
+          } else if (msg.topic == `/${id}/data/btn2`) {
+            // channel2Set(msg.data);
+            buttonStateSet(oldVal => {
+              const copy = [...oldVal];
+
+              copy[2] = msg.data;
+
+              return copy;
+            });
+          } else if (msg.topic == `/${id}/data/btn3`) {
+            // channel3Set(msg.data);
+            buttonStateSet(oldVal => {
+              const copy = [...oldVal];
+
+              copy[3] = msg.data;
+
+              return copy;
+            });
+          } else if (msg.topic == `/${id}/data/btn4`) {
+            // channel4Set(msg.data);
+            buttonStateSet(oldVal => {
+              const copy = [...oldVal];
+
+              copy[4] = msg.data;
+
+              return copy;
+            });
           } else if (msg.topic == `/${id}/data/firmwareversion`) {
-            firmwareVersionSet(msg.data);
+            // firmwareVersionSet(msg.data);
           }
+
+          isLoadSet(true);
           // }
         });
 
         client.on('connect', function () {
           console.log('connected =====================');
-          client.subscribe(`/${id}/data/btnone`, 0);
-          client.subscribe(`/${id}/data/btntwo`, 0);
-          client.subscribe(`/${id}/data/btnthree`, 0);
-          client.subscribe(`/${id}/data/btnfour`, 0);
+          client.subscribe(`/${id}/data/btn1`, 0);
+          client.subscribe(`/${id}/data/btn2`, 0);
+          client.subscribe(`/${id}/data/btn3`, 0);
+          client.subscribe(`/${id}/data/btn4`, 0);
           client.subscribe(`${id}`, 0);
           client.subscribe(`/${id}/data/firmwareversion`, 0);
           MQTTClient = client;
@@ -128,13 +147,7 @@ const SonoffDevice = ({
       });
   }, [navigation]);
 
-  useEffect(() => {
-    isLoadingSet(false);
-
-    return () => isLoadingSet(false);
-  }, []);
-
-  if (!MQTTClient) {
+  if (!isLoad) {
     return (
       <Box
         width="full"
@@ -227,7 +240,7 @@ const SonoffDevice = ({
       <VStack>
         <Pressable
           onPress={() => {
-            navigation.navigate('Switch', {
+            navigation.navigate('Controlscreen', {
               id: id,
               switchName: switchName,
               model: model,
@@ -296,132 +309,69 @@ const SonoffDevice = ({
         {/* switch */}
 
         <HStack mt={1} justifyContent="space-between">
-          <VStack>
-            <Switch
-              isDisabled={isConnected == 'true' ? false : true}
-              isChecked={channel1 == 'true' ? true : false}
-              onThumbColor={PRIMARY_COLOR}
-              onTrackColor={SECONDARY_COLOR}
-              _dark={{offThumbColor: FONT_INACTIVE_DARK}}
-              onChange={() => {
-                if (isConnected == 'true') {
-                  Vibration.vibrate(500);
-                  channel1 == 'true'
-                    ? channel1Set('false')
-                    : channel1Set('true');
-                  channel1 == 'true'
-                    ? MQTTClient.publish(`/${id}/data/btnone`, 'false', 0, true)
-                    : MQTTClient.publish(`/${id}/data/btnone`, 'true', 0, true);
-                } else {
-                  AndroidToast.toast('device disconnected');
-                }
-              }}
-            />
-            <Text
-              fontSize={FONT_SUB}
-              textAlign="center"
-              numberOfLines={1}
-              lineBreakMode="tail"
-              maxW={12}
-              _light={{color: isConnected == 'true' ? BG_DARK : DISABLE_COLOR}}
-              _dark={{
-                color:
-                  isConnected == 'true' ? FONT_INACTIVE_DARK : DISABLE_COLOR,
-              }}>
-              {/* switch1 */}
-              {switchName[0]}
-            </Text>
-          </VStack>
-          <VStack>
-            <Switch
-              isDisabled={isConnected == 'true' ? false : true}
-              isChecked={channel2 == 'true' ? true : false}
-              onThumbColor={PRIMARY_COLOR}
-              onTrackColor={SECONDARY_COLOR}
-              _dark={{offThumbColor: FONT_INACTIVE_DARK}}
-              onChange={() => {
-                Vibration.vibrate(500);
-                channel2 == 'true' ? channel2Set('false') : channel2Set('true');
-                channel2 == 'true'
-                  ? MQTTClient.publish(`/${id}/data/btntwo`, 'false', 0, true)
-                  : MQTTClient.publish(`/${id}/data/btntwo`, 'true', 0, true);
-              }}
-            />
-            <Text
-              fontSize={FONT_SUB}
-              textAlign="center"
-              numberOfLines={1}
-              lineBreakMode="tail"
-              maxW={12}
-              _light={{color: isConnected == 'true' ? BG_DARK : DISABLE_COLOR}}
-              _dark={{
-                color:
-                  isConnected == 'true' ? FONT_INACTIVE_DARK : DISABLE_COLOR,
-              }}>
-              {/* switch2 */}
-              {switchName[1]}
-            </Text>
-          </VStack>
-          <VStack>
-            <Switch
-              isDisabled={isConnected == 'true' ? false : true}
-              isChecked={channel3 == 'true' ? true : false}
-              onThumbColor={PRIMARY_COLOR}
-              onTrackColor={SECONDARY_COLOR}
-              _dark={{offThumbColor: FONT_INACTIVE_DARK}}
-              onChange={() => {
-                Vibration.vibrate(500);
-                channel3 == 'true' ? channel3Set('false') : channel3Set('true');
-                channel3 == 'true'
-                  ? MQTTClient.publish(`/${id}/data/btnthree`, 'false', 0, true)
-                  : MQTTClient.publish(`/${id}/data/btnthree`, 'true', 0, true);
-              }}
-            />
-            <Text
-              fontSize={FONT_SUB}
-              textAlign="center"
-              numberOfLines={1}
-              lineBreakMode="tail"
-              maxW={12}
-              _light={{color: isConnected == 'true' ? BG_DARK : DISABLE_COLOR}}
-              _dark={{
-                color:
-                  isConnected == 'true' ? FONT_INACTIVE_DARK : DISABLE_COLOR,
-              }}>
-              {/* switch3 */}
-              {switchName[2]}
-            </Text>
-          </VStack>
-          <VStack>
-            <Switch
-              isDisabled={isConnected == 'true' ? false : true}
-              isChecked={channel4 == 'true' ? true : false}
-              onThumbColor={PRIMARY_COLOR}
-              onTrackColor={SECONDARY_COLOR}
-              _dark={{offThumbColor: FONT_INACTIVE_DARK}}
-              onChange={() => {
-                Vibration.vibrate(500);
-                channel4 == 'true' ? channel4Set('false') : channel4Set('true');
-                channel4 == 'true'
-                  ? MQTTClient.publish(`/${id}/data/btnfour`, 'false', 0, true)
-                  : MQTTClient.publish(`/${id}/data/btnfour`, 'true', 0, true);
-              }}
-            />
-            <Text
-              fontSize={FONT_SUB}
-              textAlign="center"
-              numberOfLines={1}
-              lineBreakMode="tail"
-              maxW={12}
-              _light={{color: isConnected == 'true' ? BG_DARK : DISABLE_COLOR}}
-              _dark={{
-                color:
-                  isConnected == 'true' ? FONT_INACTIVE_DARK : DISABLE_COLOR,
-              }}>
-              {/* switch4 */}
-              {switchName[3]}
-            </Text>
-          </VStack>
+          {switchName.map((val, i) => {
+            return (
+              <VStack>
+                <Switch
+                  key={i + 1}
+                  isDisabled={isConnected == 'true' ? false : true}
+                  isChecked={buttonState[i + 1] == 'true' ? true : false}
+                  onThumbColor={PRIMARY_COLOR}
+                  onTrackColor={SECONDARY_COLOR}
+                  _dark={{offThumbColor: FONT_INACTIVE_DARK}}
+                  onChange={() => {
+                    if (isConnected == 'true') {
+                      Vibration.vibrate(500);
+                      // buttonState[i] == 'true'
+                      // ?
+                      buttonStateSet(oldVal => {
+                        const copy = [...oldVal];
+
+                        copy[i + 1] =
+                          buttonState[i + 1] == 'true' ? 'false' : 'true';
+
+                        return copy;
+                      });
+                      // : channel1Set('true');
+                      buttonState[i + 1] == 'true'
+                        ? MQTTClient.publish(
+                            `/${id}/data/btn${i + 1}`,
+                            'false',
+                            0,
+                            true,
+                          )
+                        : MQTTClient.publish(
+                            `/${id}/data/btn${i + 1}`,
+                            'true',
+                            0,
+                            true,
+                          );
+                    } else {
+                      AndroidToast.toast('device disconnected');
+                    }
+                  }}
+                />
+                <Text
+                  fontSize={FONT_SUB}
+                  textAlign="center"
+                  numberOfLines={1}
+                  lineBreakMode="tail"
+                  maxW={12}
+                  _light={{
+                    color: isConnected == 'true' ? BG_DARK : DISABLE_COLOR,
+                  }}
+                  _dark={{
+                    color:
+                      isConnected == 'true'
+                        ? FONT_INACTIVE_DARK
+                        : DISABLE_COLOR,
+                  }}>
+                  {/* switch */}
+                  {val}
+                </Text>
+              </VStack>
+            );
+          })}
         </HStack>
       </VStack>
     </Box>

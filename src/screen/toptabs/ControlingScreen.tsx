@@ -7,17 +7,19 @@ import ControlButton from '../../components/ControlButton';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
 import {BG_DARK, BG_LIGHT, PRIMARY_COLOR} from '../../utils/constanta';
 import Loader from 'react-native-modal-loader';
+import AndroidToast from '../../utils/AndroidToast';
 
 type Nav = StackScreenProps<HomeStackParams>;
 
 var MQTTClient: IMqttClient;
 
 const ControlingScreen = ({navigation, route}: Nav) => {
-  const [btnone, btnoneSet] = useState(false);
-  const [btntwo, btntwoSet] = useState(false);
-  const [btnthree, btnthreeSet] = useState(false);
-  const [btnfour, btnfourSet] = useState(false);
-  const [btnfive, btnfiveSet] = useState(false);
+  const [buttonState, buttonStateSet] = useState<Array<string>>([
+    'false',
+    'false',
+    'false',
+    'false',
+  ]);
   const [isLoad, isLoadSet] = useState<boolean>(false);
 
   let state: Array<{path: string; status: boolean}> = [];
@@ -48,47 +50,84 @@ const ControlingScreen = ({navigation, route}: Nav) => {
         client.on('message', function (msg) {
           // console.log('mqtt.event.message', msg);
 
-          if (msg.topic == `/${id}/data/btnone`) {
-            if (msg.data == 'true') {
-              btnoneSet(true);
-            } else {
-              btnoneSet(false);
-            }
-          } else if (msg.topic == `/${id}/data/btntwo`) {
-            if (msg.data == 'true') {
-              btntwoSet(true);
-            } else {
-              btntwoSet(false);
-            }
-          } else if (msg.topic == `/${id}/data/btnthree`) {
-            if (msg.data == 'true') {
-              btnthreeSet(true);
-            } else {
-              btnthreeSet(false);
-            }
-          } else if (msg.topic == `/${id}/data/btnfour`) {
-            if (msg.data == 'true') {
-              btnfourSet(true);
-            } else {
-              btnfourSet(false);
-            }
-          } else if (msg.topic == `/${id}/data/btnfive`) {
-            if (msg.data == 'true') {
-              btnfiveSet(true);
-            } else {
-              btnfiveSet(false);
-            }
-          }
+          // if (isLoading) {
+          if (msg.topic == `/${id}/data/btn1`) {
+            // if (msg.data == 'true') {
+            //   btnoneSet(true);
 
+            // } else {
+            //   btnoneSet(false);
+            // }
+            buttonStateSet(oldValue => {
+              const copy = [...oldValue];
+
+              copy[1] = msg.data;
+
+              return copy;
+            });
+          } else if (msg.topic == `/${id}/data/btn2`) {
+            // if (msg.data == 'true') {
+            //   btntwoSet(true);
+            // } else {
+            //   btntwoSet(false);
+            // }
+            buttonStateSet(oldValue => {
+              const copy = [...oldValue];
+
+              copy[2] = msg.data;
+
+              return copy;
+            });
+          } else if (msg.topic == `/${id}/data/btn3`) {
+            // if (msg.data == 'true') {
+            //   btnthreeSet(true);
+            // } else {
+            //   btnthreeSet(false);
+            // }
+            buttonStateSet(oldValue => {
+              const copy = [...oldValue];
+
+              copy[3] = msg.data;
+
+              return copy;
+            });
+          } else if (msg.topic == `/${id}/data/btn4`) {
+            // if (msg.data == 'true') {
+            //   btnfourSet(true);
+            // } else {
+            //   btnfourSet(false);
+            // }
+            buttonStateSet(oldValue => {
+              const copy = [...oldValue];
+
+              copy[4] = msg.data;
+
+              return copy;
+            });
+          } else if (msg.topic == `/${id}/data/btn5`) {
+            // if (msg.data == 'true') {
+            //   btnfourSet(true);
+            // } else {
+            //   btnfourSet(false);
+            // }
+            buttonStateSet(oldValue => {
+              const copy = [...oldValue];
+
+              copy[5] = msg.data;
+
+              return copy;
+            });
+          }
+          // }
           isLoadSet(true);
         });
 
         client.on('connect', function () {
-          client.subscribe(`/${id}/data/btnone`, 0);
-          client.subscribe(`/${id}/data/btntwo`, 0);
-          client.subscribe(`/${id}/data/btnthree`, 0);
-          client.subscribe(`/${id}/data/btnfour`, 0);
-          client.subscribe(`/${id}/data/btnfive`, 0);
+          client.subscribe(`/${id}/data/btn1`, 0);
+          client.subscribe(`/${id}/data/btn2`, 0);
+          client.subscribe(`/${id}/data/btn3`, 0);
+          client.subscribe(`/${id}/data/btn4`, 0);
+          client.subscribe(`/${id}/data/btn5`, 0);
           MQTTClient = client;
         });
 
@@ -108,66 +147,47 @@ const ControlingScreen = ({navigation, route}: Nav) => {
         width={'100%'}
         height="95%"
         px={5}
+        pt={model == '5CH' ? 0 : 32}
         mt={12}
-        mb={10}
         flexDirection="row"
+        alignItems="center"
         justifyContent={'space-around'}
         flexWrap="wrap">
-        <ControlButton
-          key={1}
-          onPress={() => {
-            // btnoneSet(!btnone);
-            btnone == true
-              ? MQTTClient.publish(`/${id}/data/btnone`, 'false', 0, true)
-              : MQTTClient.publish(`/${id}/data/btnone`, 'true', 0, true);
-          }}
-          name={switchName[0]}
-          condition={btnone}
-        />
-        <ControlButton
-          key={2}
-          onPress={() => {
-            // btntwoSet(!btntwo);
-            btntwo == true
-              ? MQTTClient.publish(`/${id}/data/btntwo`, 'false', 0, true)
-              : MQTTClient.publish(`/${id}/data/btntwo`, 'true', 0, true);
-          }}
-          name={switchName[1]}
-          condition={btntwo}
-        />
-        <ControlButton
-          key={3}
-          onPress={() => {
-            // btnthreeSet(!btnthree);
-            btnthree == true
-              ? MQTTClient.publish(`/${id}/data/btnthree`, 'false', 0, true)
-              : MQTTClient.publish(`/${id}/data/btnthree`, 'true', 0, true);
-          }}
-          name={switchName[2]}
-          condition={btnthree}
-        />
-        <ControlButton
-          key={4}
-          onPress={() => {
-            // btnfourSet(!btnfour);
-            btnfour == true
-              ? MQTTClient.publish(`/${id}/data/btnfour`, 'false', 0, true)
-              : MQTTClient.publish(`/${id}/data/btnfour`, 'true', 0, true);
-          }}
-          name={switchName[3]}
-          condition={btnfour}
-        />
-        <ControlButton
-          key={5}
-          onPress={() => {
-            // btnfiveSet(!btnfive);
-            btnfive == true
-              ? MQTTClient.publish(`/${id}/data/btnfive`, 'false', 0, true)
-              : MQTTClient.publish(`/${id}/data/btnfive`, 'true', 0, true);
-          }}
-          name={switchName[4]}
-          condition={btnfive}
-        />
+        {switchName.map((val, i) => {
+          console.log('index btn = ', i);
+
+          return (
+            <ControlButton
+              key={i + 1}
+              onPress={() => {
+                // btnoneSet(!btnone);
+                // btnoneSet(prev => !prev);
+                buttonStateSet(oldVal => {
+                  const copy = [...oldVal];
+
+                  copy[i + 1] = copy[i + 1] == 'true' ? 'false' : 'true';
+
+                  return copy;
+                });
+                buttonState[i + 1] == 'true'
+                  ? MQTTClient.publish(
+                      `/${id}/data/btn${i + 1}`,
+                      'false',
+                      0,
+                      true,
+                    )
+                  : MQTTClient.publish(
+                      `/${id}/data/btn${i + 1}`,
+                      'true',
+                      0,
+                      true,
+                    );
+              }}
+              name={val}
+              condition={buttonState[i + 1] == 'true' ? true : false}
+            />
+          );
+        })}
       </Box>
       <Box
         flexDir={'row'}
@@ -182,16 +202,17 @@ const ControlingScreen = ({navigation, route}: Nav) => {
             //   switchName: switchName,
             //   model: model,
             // });
+            AndroidToast.toast('coming soon');
           }}
           justifyContent={'center'}
           alignItems="center">
           <Icon
             as={MaterialCommunityIcons}
-            name="clock-edit-outline"
+            name="timer-settings-outline"
             size={10}
             color={PRIMARY_COLOR}
           />
-          <Text mt={1}>Action</Text>
+          <Text mt={1}>Loop Timer</Text>
         </Pressable>
         <Pressable
           onPress={() => {

@@ -27,6 +27,7 @@ const ControlButton = ({condition, name, onPress, key}: Props) => {
 
   return (
     <Button
+      marginTop={5}
       key={key}
       variant={'unstyled'}
       onPress={() => {
