@@ -29,8 +29,6 @@ import {
 } from '../utils/constanta';
 import SplashScreen from 'react-native-splash-screen';
 import AndroidToast from '../utils/AndroidToast';
-import PushNotification from 'react-native-push-notification';
-import NetInfo from '@react-native-community/netinfo';
 
 interface Props {
   gardenName: string;
@@ -70,14 +68,14 @@ const DeviceList = ({
   ]);
   const [firmwareVersion, firmwareVersionSet] = useState('');
 
-  const sendNotification = (channel, title, body) => {
-    PushNotification.localNotification({
-      channelId: channel,
-      title: title,
-      message: body,
-      soundName: 'my_sound.mp3',
-    });
-  };
+  // const sendNotification = (channel, title, body) => {
+  //   PushNotification.localNotification({
+  //     channelId: channel,
+  //     title: title,
+  //     message: body,
+  //     soundName: 'my_sound.mp3',
+  //   });
+  // };
 
   useEffect(() => {
     MQTT.createClient({
@@ -94,11 +92,11 @@ const DeviceList = ({
 
           if (msg.topic == `/${id}/data/weather`) {
             if (msg.data == 'true') {
-              sendNotification(
-                '1',
-                `${gardenName} Turun hujan`,
-                'Amati kebun anda',
-              );
+              // sendNotification(
+              //   '1',
+              //   `${gardenName} Turun hujan`,
+              //   'Amati kebun anda',
+              // );
             }
             weatherSet(msg.data);
           } else if (msg.topic == `${id}`) {
@@ -176,84 +174,84 @@ const DeviceList = ({
       });
   }, [navigation]);
 
-  if (!isLoad) {
-    return (
-      <Box
-        width="full"
-        _light={{bg: BG_LIGHT}}
-        _dark={{bg: BG_DARK}}
-        h={ITEM_HEIGHT_H3 * 0.95}
-        p={3}
-        mt={3}
-        borderWidth={1}
-        borderColor={DISABLE_COLOR}
-        rounded="xl">
-        <HStack mt={3}>
-          <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
-          <Skeleton
-            ml={3}
-            h="5"
-            w={'5'}
-            rounded="full"
-            startColor="coolGray.300"
-          />
-        </HStack>
-        <Skeleton mt={3} h="3" w={'78%'} rounded="full" startColor="red.300" />
-        <HStack mt={3} justifyContent="space-between">
-          <VStack>
-            <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
-            <Skeleton
-              mt={1}
-              h="3"
-              w={'12'}
-              rounded="full"
-              startColor="coolGray.400"
-            />
-          </VStack>
-          <VStack>
-            <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
-            <Skeleton
-              mt={1}
-              h="3"
-              w={'12'}
-              rounded="full"
-              startColor="coolGray.400"
-            />
-          </VStack>
-          <VStack>
-            <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
-            <Skeleton
-              mt={1}
-              h="3"
-              w={'12'}
-              rounded="full"
-              startColor="coolGray.400"
-            />
-          </VStack>
-          <VStack>
-            <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
-            <Skeleton
-              mt={1}
-              h="3"
-              w={'12'}
-              rounded="full"
-              startColor="coolGray.400"
-            />
-          </VStack>
-          <VStack>
-            <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
-            <Skeleton
-              mt={1}
-              h="3"
-              w={'12'}
-              rounded="full"
-              startColor="coolGray.400"
-            />
-          </VStack>
-        </HStack>
-      </Box>
-    );
-  }
+  // if (!isLoad) {
+  //   return (
+  //     <Box
+  //       width="full"
+  //       _light={{bg: BG_LIGHT}}
+  //       _dark={{bg: BG_DARK}}
+  //       h={ITEM_HEIGHT_H3 * 0.95}
+  //       p={3}
+  //       mt={3}
+  //       borderWidth={1}
+  //       borderColor={DISABLE_COLOR}
+  //       rounded="xl">
+  //       <HStack mt={3}>
+  //         <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
+  //         <Skeleton
+  //           ml={3}
+  //           h="5"
+  //           w={'5'}
+  //           rounded="full"
+  //           startColor="coolGray.300"
+  //         />
+  //       </HStack>
+  //       <Skeleton mt={3} h="3" w={'78%'} rounded="full" startColor="red.300" />
+  //       <HStack mt={3} justifyContent="space-between">
+  //         <VStack>
+  //           <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
+  //           <Skeleton
+  //             mt={1}
+  //             h="3"
+  //             w={'12'}
+  //             rounded="full"
+  //             startColor="coolGray.400"
+  //           />
+  //         </VStack>
+  //         <VStack>
+  //           <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
+  //           <Skeleton
+  //             mt={1}
+  //             h="3"
+  //             w={'12'}
+  //             rounded="full"
+  //             startColor="coolGray.400"
+  //           />
+  //         </VStack>
+  //         <VStack>
+  //           <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
+  //           <Skeleton
+  //             mt={1}
+  //             h="3"
+  //             w={'12'}
+  //             rounded="full"
+  //             startColor="coolGray.400"
+  //           />
+  //         </VStack>
+  //         <VStack>
+  //           <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
+  //           <Skeleton
+  //             mt={1}
+  //             h="3"
+  //             w={'12'}
+  //             rounded="full"
+  //             startColor="coolGray.400"
+  //           />
+  //         </VStack>
+  //         <VStack>
+  //           <Skeleton h="5" w={'16'} rounded="full" startColor="coolGray.400" />
+  //           <Skeleton
+  //             mt={1}
+  //             h="3"
+  //             w={'12'}
+  //             rounded="full"
+  //             startColor="coolGray.400"
+  //           />
+  //         </VStack>
+  //       </HStack>
+  //     </Box>
+  //   );
+  // }
 
   return (
     <Box

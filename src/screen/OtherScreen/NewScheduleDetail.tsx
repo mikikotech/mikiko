@@ -26,7 +26,7 @@ import firestore from '@react-native-firebase/firestore';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {StackScreenProps} from '@react-navigation/stack';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
-import {SchedulParams, NewSchedulParams} from '../../route/AuthContext';
+import {NewSchedulParams} from '../../route/AuthContext';
 import mqtt, {IMqttClient} from 'sp-react-native-mqtt';
 
 type Nav = StackScreenProps<HomeStackParams>;
@@ -42,7 +42,7 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
   const [everySelect, everySelectSet] = useState<string>('week');
   const [every, everySet] = useState<Array<string>>([]);
   const [months, mounthSet] = useState<Array<string>>([]);
-  // const [repeat, repeatSet] = useState<string>('1');
+  const [repeat, repeatSet] = useState<string>('1');
   const [status, statusSet] = useState<boolean>(true);
   const [cron, cronSet] = useState<Array<string>>([
     '0',
@@ -165,48 +165,21 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
           <Text _light={{color: 'black'}} _dark={{color: FONT_INACTIVE_DARK}}>
             Button
           </Text>
-          {model == '5CH' ? (
-            <Select
-              selectedValue={output}
-              minWidth="200"
-              accessibilityLabel="Choose Button"
-              placeholder="Choose Button"
-              _selectedItem={{
-                bg: 'teal.600',
-                endIcon: <CheckIcon size="5" />,
-              }}
-              mt={1}
-              onValueChange={val => outputSet(val)}>
-              {/* {switchName.map((i, data) => {
-              return <Select.Item label={switchName[i]} value={`out${i + 1}`} />;
-            })} */}
-              <Select.Item label={switchName[0]} value="out1" />
-              <Select.Item label={switchName[1]} value="out2" />
-              <Select.Item label={switchName[2]} value="out3" />
-              <Select.Item label={switchName[3]} value="out4" />
-              <Select.Item label={switchName[4]} value="out5" />
-            </Select>
-          ) : (
-            <Select
-              selectedValue={output}
-              minWidth="200"
-              accessibilityLabel="Choose Button"
-              placeholder="Choose Button"
-              _selectedItem={{
-                bg: 'teal.600',
-                endIcon: <CheckIcon size="5" />,
-              }}
-              mt={1}
-              onValueChange={val => outputSet(val)}>
-              {/* {switchName.map((i, data) => {
-              return <Select.Item label={switchName[i]} value={`out${i + 1}`} />;
-            })} */}
-              <Select.Item label={switchName[0]} value="out1" />
-              <Select.Item label={switchName[1]} value="out2" />
-              <Select.Item label={switchName[2]} value="out3" />
-              <Select.Item label={switchName[3]} value="out4" />
-            </Select>
-          )}
+          <Select
+            selectedValue={output}
+            minWidth="200"
+            accessibilityLabel="Choose Button"
+            placeholder="Choose Button"
+            _selectedItem={{
+              bg: 'teal.600',
+              endIcon: <CheckIcon size="5" />,
+            }}
+            mt={1}
+            onValueChange={val => outputSet(val)}>
+            {switchName.map((val, i) => {
+              return <Select.Item label={val} value={`out${i + 1}`} />;
+            })}
+          </Select>
         </HStack>
 
         {/* radio output state */}
@@ -312,6 +285,8 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
 
                   everySet(val);
 
+                  if (val.length > 0) repeatSet('0');
+
                   everySet(() => {
                     return val;
                   });
@@ -374,6 +349,8 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
                   console.log(val);
 
                   mounthSet(val);
+
+                  if (val.length > 0) repeatSet('0');
 
                   mounthSet(() => {
                     return val;
@@ -579,7 +556,7 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
             if (MQTTClient != null && MQTTClient != undefined) {
               var cronString: string = cron.join(' ');
 
-              var data = `${cronString}:${output}:${state}:${
+              var data = `${cronString}:${output}:${state}:${repeat}:${
                 status == true ? 1 : 0
               }`;
 
@@ -598,7 +575,7 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
                   schedule: firestore.FieldValue.arrayUnion(newSchedule),
                 })
                 .then(() => {
-                  MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, true);
+                  MQTTClient.publish(`/${id}/data/schedule`, '11', 0, false);
                 });
 
               navigation.navigate('Schedule', {

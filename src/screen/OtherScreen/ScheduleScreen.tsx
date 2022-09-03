@@ -95,7 +95,12 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
           })
           .then(() => {
             try {
-              MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, true);
+              MQTTClient.publish(
+                `/${id}/data/schedule`,
+                `22:${rowKey}`,
+                0,
+                false,
+              );
             } catch (error) {}
           });
       } catch (error) {
@@ -165,7 +170,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
           }
           var output = dataSplit[1];
           var state = dataSplit[2] == '1' ? 'ON' : 'OFF';
-          var status = dataSplit[3] == '1' ? true : false;
+          var status = dataSplit[4] == '1' ? true : false;
 
           return (
             <HStack
@@ -197,8 +202,10 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
                       ? 'Every  saturday'
                       : every == '6'
                       ? 'Every  sunday'
-                      : every == '*'
+                      : every == '*' && dataSplit[3] == '0'
                       ? 'Everyday'
+                      : dataSplit[3] == '1' && every == '*'
+                      ? 'Once'
                       : everyWeek}
                   </Text>
                 </HStack>

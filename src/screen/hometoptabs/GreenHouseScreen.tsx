@@ -88,6 +88,7 @@ const GreenHouseScreen = ({navigation}: Nav) => {
       px={3}>
       {deviceList.length > 0 ? (
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={deviceList}
           renderItem={({item}) => {
             // if (item.scene != 'greenHouse') statusSet(true);
@@ -106,7 +107,7 @@ const GreenHouseScreen = ({navigation}: Nav) => {
                     model={item._data.model}
                     switchName={item._data.switchName}
                   />
-                ) : item._data.model == '4CH' ? (
+                ) : (
                   <SonoffDevice
                     gardenName={item._data.gardenName}
                     id={item._data.id}
@@ -116,7 +117,7 @@ const GreenHouseScreen = ({navigation}: Nav) => {
                     model={item._data.model}
                     switchName={item._data.switchName}
                   />
-                ) : null}
+                )}
               </Box>
             );
           }}

@@ -94,7 +94,9 @@ const SettingsUpScreen = ({navigation, route}: Nav) => {
         myInterval = setInterval(() => {
           socket.send(
             // state.auth.email !== null ? state.auth.email : state.auth.uid, // message sent
-            ((new Date().getTimezoneOffset() / 60) * -1).toString(),
+            `${((new Date().getTimezoneOffset() / 60) * -1).toString()}:${
+              state.auth.email !== null ? state.auth.email : state.auth.uid
+            }`,
             undefined,
             undefined,
             2255,

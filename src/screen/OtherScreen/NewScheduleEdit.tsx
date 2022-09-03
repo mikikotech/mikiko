@@ -44,6 +44,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
   const [time, timeSet] = useState<string>('00:00');
   const [output, outputSet] = useState<string>('out1');
   const [state, stateSet] = useState<string>('1');
+  const [repeat, repeatSet] = useState<string>('1');
   const [everySelect, everySelectSet] = useState<string>('week');
   const [every, everySet] = useState<Array<string>>([]);
   const [months, mounthSet] = useState<Array<string>>([]);
@@ -82,7 +83,8 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
       everySelectSet('months');
       mounthSet(cronSplit[5].split(','));
     }
-    statusSet(dataSplit[3] == '1' ? true : false);
+    repeatSet(dataSplit[3]);
+    statusSet(dataSplit[4] == '1' ? true : false);
 
     firestore()
       // .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
@@ -313,6 +315,8 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
 
                   everySet(val);
 
+                  if (val.length > 0) repeatSet('0');
+
                   everySet(() => {
                     return val;
                   });
@@ -375,6 +379,8 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
                   console.log(val);
 
                   mounthSet(val);
+
+                  if (val.length > 0) repeatSet('0');
 
                   mounthSet(() => {
                     return val;
@@ -579,7 +585,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
             if (MQTTClient != null && MQTTClient != undefined) {
               var cronString: string = cron.join(' ');
 
-              var data = `${cronString}:${output}:${state}:${
+              var data = `${cronString}:${output}:${state}:${repeat}:${
                 status == true ? 1 : 0
               }`;
               const newScheduleEdit = scheduleList?.map(res => {
@@ -601,7 +607,7 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
                   schedule: newScheduleEdit,
                 })
                 .then(() => {
-                  MQTTClient.publish(`/${id}/data/schedule`, 'true', 0, true);
+                  MQTTClient.publish(`/${id}/data/schedule`, '33', 0, false);
                 });
 
               navigation.navigate('Schedule', {

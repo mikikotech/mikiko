@@ -18,10 +18,9 @@ import AuthContex, {
 import {useColorMode} from 'native-base';
 import {LogBox} from 'react-native';
 import AuthStackNavigation from '../navigation/AuthStackNavigation';
-import PushNotification, {Importance} from 'react-native-push-notification';
 import theme from '../utils/theme';
-import TuyaUser from '../lib/TuyaUser';
-import AndroidToast from '../utils/AndroidToast';
+import PushNotification, {Importance} from 'react-native-push-notification';
+import firestore from '@react-native-firebase/firestore';
 
 const Stack = createStackNavigator();
 
@@ -39,44 +38,6 @@ const RouteNavigation = () => {
   const dispatch = useDispatch();
 
   const {setColorMode} = useColorMode();
-
-  PushNotification.configure({
-    onRegister: function (token) {
-      console.log('TOKEN:', token);
-    },
-    onNotification: function (notification) {
-      console.log('NOTIFICATION:', notification);
-    },
-    onAction: function (notification) {
-      console.log('ACTION:', notification.action);
-      console.log('NOTIFICATION:', notification);
-    },
-    onRegistrationError: function (err) {
-      console.error(err.message, err);
-    },
-    permissions: {
-      alert: true,
-      badge: true,
-      sound: true,
-    },
-
-    popInitialNotification: true,
-    requestPermissions: true,
-  });
-
-  const createChannel = (channel, channelName) => {
-    PushNotification.createChannel(
-      {
-        channelId: channel, // (required)
-        channelName: channelName, // (required)
-        channelDescription: 'A channel to categorise your notifications',
-        soundName: 'my_sound.mp3', // (optional) See `soundName` parameter of `localNotification` function
-        importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
-        vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
-      },
-      created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
-    );
-  };
 
   const Auth = useMemo(
     () => ({
@@ -153,34 +114,12 @@ const RouteNavigation = () => {
     }
   };
 
-  const isUserLogin = async () => {
-    await TuyaUser.isLogin().then(res => {
-      if (res == true) {
-        auth().onAuthStateChanged(res => {
-          console.log('user login = ', res);
-          // if (
-          //   res?.emailVerified ||
-          //   res?.email != null ||
-          //   (res?.phoneNumber !== null && res?.displayName != null)
-          // ) {
-          // }
-          dispatch({type: ActionType.LOGIN, payload: res});
-        });
-      } else {
-        dispatch({type: ActionType.LOGOUT});
-        AndroidToast.toast('user login expired');
-      }
-    });
-  };
-
   useEffect(() => {
     getThemeValue();
 
     getDevice();
 
     getSchedule();
-
-    createChannel('1', 'rain_notify');
 
     console.log('retrive');
   }, []);
@@ -194,6 +133,62 @@ const RouteNavigation = () => {
         res?.email != null ||
         (res?.phoneNumber !== null && res?.displayName != null)
       ) {
+        PushNotification.createChannel(
+          {
+            channelId: 'schedule', // (required)
+            channelName: 'schedule', // (optional) default: true
+            soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
+            importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
+            vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
+          },
+          created => console.log(`createChannel returned '${created}'`), // (optional) callback returns whether the channel was created, false means it already existed.
+        );
+
+        PushNotification.configure({
+          onRegister: function (token) {
+            console.log(
+              'TOKEN ====================================================================',
+              token,
+            );
+
+            firestore()
+              .collection('users')
+              .doc(res.email !== null ? res.email : res.uid)
+              .update({
+                fcm_token: token.token,
+              });
+          },
+          onNotification: function (notification) {
+            console.log('NOTIFICATION:', notification);
+
+            PushNotification.localNotification({
+              /* Android Only Properties */
+              channelId: 'schedule', // (optional) set whether this is an "ongoing" notification
+              title: notification.title, // (optional)
+              message: notification.message,
+              priority: 'high', // (optional) set notification priority, default: high
+              visibility: 'public', // (optional) default: {} (using null throws a JSON value '<null>' error)
+              playSound: false, // (optional) default: true
+              soundName: 'default', // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
+            });
+          },
+          onAction: function (notification) {
+            console.log('ACTION:', notification.action);
+            console.log('NOTIFICATION:', notification);
+          },
+          onRegistrationError: function (err) {
+            console.error(err.message, err);
+          },
+          permissions: {
+            alert: true,
+            badge: true,
+            sound: true,
+          },
+
+          popInitialNotification: true,
+          requestPermissions: true,
+        });
+
         dispatch({type: ActionType.LOGIN, payload: res});
       }
     });

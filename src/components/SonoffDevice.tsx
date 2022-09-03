@@ -28,7 +28,6 @@ import {
 } from '../utils/constanta';
 import SplashScreen from 'react-native-splash-screen';
 import AndroidToast from '../utils/AndroidToast';
-import NetInfo from '@react-native-community/netinfo';
 
 interface Props {
   gardenName: string;
