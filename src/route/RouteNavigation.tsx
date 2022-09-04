@@ -164,11 +164,15 @@ const RouteNavigation = () => {
             PushNotification.localNotification({
               /* Android Only Properties */
               channelId: 'schedule', // (optional) set whether this is an "ongoing" notification
-              title: notification.title, // (optional)
+              subtitle: notification.title,
+              title: 'Mikiko App', // (optional)
               message: notification.message,
+              smallIcon: 'ic_launcher',
+              largeIcon: 'ic_launcher',
+              bigLargeIcon: 'ic_launcher',
               priority: 'high', // (optional) set notification priority, default: high
               visibility: 'public', // (optional) default: {} (using null throws a JSON value '<null>' error)
-              playSound: false, // (optional) default: true
+              playSound: true, // (optional) default: true
               soundName: 'default', // (optional) Repeating interval. Check 'Repeating Notifications' section for more info.
             });
           },

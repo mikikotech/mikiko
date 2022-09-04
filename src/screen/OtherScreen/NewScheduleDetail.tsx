@@ -285,7 +285,11 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
 
                   everySet(val);
 
-                  if (val.length > 0) repeatSet('0');
+                  if (val.length > 0) {
+                    repeatSet('0');
+                  } else {
+                    repeatSet('1');
+                  }
 
                   everySet(() => {
                     return val;
@@ -350,7 +354,11 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
 
                   mounthSet(val);
 
-                  if (val.length > 0) repeatSet('0');
+                  if (val.length > 0) {
+                    repeatSet('0');
+                  } else {
+                    repeatSet('1');
+                  }
 
                   mounthSet(() => {
                     return val;
@@ -575,7 +583,17 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
                   schedule: firestore.FieldValue.arrayUnion(newSchedule),
                 })
                 .then(() => {
-                  MQTTClient.publish(`/${id}/data/schedule`, '11', 0, false);
+                  let scheduleMqtt = {
+                    type: '11',
+                    id: newSchedule.id,
+                    data: newSchedule.data,
+                  };
+                  MQTTClient.publish(
+                    `/${id}/data/schedule`,
+                    JSON.stringify(scheduleMqtt),
+                    0,
+                    false,
+                  );
                 });
 
               navigation.navigate('Schedule', {

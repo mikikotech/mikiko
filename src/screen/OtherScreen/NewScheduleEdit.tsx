@@ -39,7 +39,7 @@ type Nav = StackScreenProps<HomeStackParams>;
 
 var MQTTClient: IMqttClient;
 
-const ScheduleEdit = ({navigation, route}: Nav) => {
+const NewScheduleEdit = ({navigation, route}: Nav) => {
   const [show, showSet] = useState<boolean>(false);
   const [time, timeSet] = useState<string>('00:00');
   const [output, outputSet] = useState<string>('out1');
@@ -315,7 +315,11 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
 
                   everySet(val);
 
-                  if (val.length > 0) repeatSet('0');
+                  if (val.length > 0) {
+                    repeatSet('0');
+                  } else {
+                    repeatSet('1');
+                  }
 
                   everySet(() => {
                     return val;
@@ -380,7 +384,11 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
 
                   mounthSet(val);
 
-                  if (val.length > 0) repeatSet('0');
+                  if (val.length > 0) {
+                    repeatSet('0');
+                  } else {
+                    repeatSet('1');
+                  }
 
                   mounthSet(() => {
                     return val;
@@ -607,7 +615,17 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
                   schedule: newScheduleEdit,
                 })
                 .then(() => {
-                  MQTTClient.publish(`/${id}/data/schedule`, '33', 0, false);
+                  let scheduleMqtt = {
+                    type: '33',
+                    id: newScheduleEdit[0].id,
+                    data: newScheduleEdit[0].data,
+                  };
+                  MQTTClient.publish(
+                    `/${id}/data/schedule`,
+                    JSON.stringify(scheduleMqtt),
+                    0,
+                    false,
+                  );
                 });
 
               navigation.navigate('Schedule', {
@@ -642,4 +660,4 @@ const ScheduleEdit = ({navigation, route}: Nav) => {
   );
 };
 
-export default ScheduleEdit;
+export default NewScheduleEdit;

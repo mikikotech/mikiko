@@ -94,10 +94,14 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
             schedule: newSchedule,
           })
           .then(() => {
+            let scheduleMqtt = {
+              type: '22',
+              id: rowKey,
+            };
             try {
               MQTTClient.publish(
                 `/${id}/data/schedule`,
-                `22:${rowKey}`,
+                JSON.stringify(scheduleMqtt),
                 0,
                 false,
               );
@@ -283,7 +287,7 @@ const ScheduleScreen = ({navigation, route}: Nav) => {
               bg={'gray.600'}>
               <Icon
                 onPress={() => {
-                  navigation.navigate('Scheduleedit', {
+                  navigation.navigate('Newscheduleedit', {
                     id: id,
                     _id: data.item.id,
                     _data: data.item.data,

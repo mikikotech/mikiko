@@ -24,6 +24,7 @@ import ProfileStackScreen from './ProfileStackNavigation';
 import EditDeviceScreen from '../screen/hometoptabs/EditDeviceScreen';
 import NewScheduleDetail from '../screen/OtherScreen/NewScheduleDetail';
 import ControlingScreen from '../screen/toptabs/ControlingScreen';
+import NewScheduleEdit from '../screen/OtherScreen/NewScheduleEdit';
 
 export type HomeStackParams = {
   Homebase;
@@ -33,6 +34,7 @@ export type HomeStackParams = {
   Schedule;
   Scheduledetail;
   Newscheduledetail;
+  Newscheduleedit;
   Scheduleedit;
   Bottomtabsbase;
   Shareimage;
@@ -88,6 +90,11 @@ const HomeStackNavigation = () => {
       <Stack.Screen
         name="Newscheduledetail"
         component={NewScheduleDetail}
+        options={{title: 'Schedule'}}
+      />
+      <Stack.Screen
+        name="Newscheduleedit"
+        component={NewScheduleEdit}
         options={{title: 'Schedule'}}
       />
       <Stack.Screen
