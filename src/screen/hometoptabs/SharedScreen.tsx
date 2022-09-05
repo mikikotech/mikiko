@@ -19,6 +19,7 @@ import DeviceList from '../../components/DeviceList';
 import firestore from '@react-native-firebase/firestore';
 import {StackScreenProps} from '@react-navigation/stack';
 import {deviceList} from './GreenHouseScreen';
+import SonoffDevice from '../../components/SonoffDevice';
 
 type Nav = StackScreenProps<any>;
 const SharedScreen = ({navigation}: Nav) => {
@@ -110,20 +111,35 @@ const SharedScreen = ({navigation}: Nav) => {
       {deviceList.length > 0 ? (
         <FlatList
           data={deviceList}
-          renderItem={item => {
-            console.log(item.item);
+          renderItem={({item}) => {
+            console.log(item._data);
             return (
-              <DeviceList
-                gardenName={item?.item?._data?.gardenName}
-                id={item?.item?._data?.id}
-                location={item?.item?._data?.location}
-                shared={true}
-                scene={item?.item?._data?.scene}
-                model={item?.item?._data?.model}
-                switchName={item?.item?._data?.switchName}
-              />
+              <Box key={item._data.id}>
+                {item._data.model == '5CH' ? (
+                  <DeviceList
+                    gardenName={item._data.gardenName}
+                    id={item._data.id}
+                    location={item._data.location}
+                    shared={false}
+                    scene={item._data.scene}
+                    model={item._data.model}
+                    switchName={item._data.switchName}
+                  />
+                ) : (
+                  <SonoffDevice
+                    gardenName={item._data.gardenName}
+                    id={item._data.id}
+                    location={item._data.location}
+                    shared={false}
+                    scene={item._data.scene}
+                    model={item._data.model}
+                    switchName={item._data.switchName}
+                  />
+                )}
+              </Box>
             );
           }}
+          keyExtractor={item => item.id}
         />
       ) : (
         <VStack

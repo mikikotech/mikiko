@@ -91,7 +91,7 @@ const OnFarmScreen = ({navigation}: Nav) => {
             // if (item.scene == 'onFarm') statusSet(false);
 
             return (
-              <Box>
+              <Box key={item._data.id}>
                 {item._data.model == '5CH' ? (
                   <DeviceList
                     gardenName={item._data.gardenName}
@@ -102,7 +102,7 @@ const OnFarmScreen = ({navigation}: Nav) => {
                     model={item._data.model}
                     switchName={item._data.switchName}
                   />
-                ) : item._data.model == '4CH' ? (
+                ) : (
                   <SonoffDevice
                     gardenName={item._data.gardenName}
                     id={item._data.id}
@@ -112,7 +112,7 @@ const OnFarmScreen = ({navigation}: Nav) => {
                     model={item._data.model}
                     switchName={item._data.switchName}
                   />
-                ) : null}
+                )}
               </Box>
             );
           }}

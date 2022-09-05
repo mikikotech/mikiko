@@ -1,7 +1,7 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import {Box, Button, FlatList, Text, VStack} from 'native-base';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {LogBox} from 'react-native';
+import {LogBox, RefreshControl} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import DeviceList from '../../components/DeviceList';
 import {HomeStackParams} from '../../navigation/HomeStackNavigation';
@@ -35,7 +35,7 @@ export type deviceList = {
 const GreenHouseScreen = ({navigation}: Nav) => {
   const state = useSelector((state: ReducerRootState) => state);
   const [deviceList, deviceListSet] = useState<Array<any>>([]);
-  const [status, statusSet] = useState<boolean>(true);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   LogBox.ignoreAllLogs();
 
@@ -57,27 +57,29 @@ const GreenHouseScreen = ({navigation}: Nav) => {
           deviceListSet(querySnapshot.docs);
         }
       });
-    // .catch(e => {});
     return () => subscribe();
   }, []);
 
-  // useLayoutEffect(() => {
-  //   const subscribe = firestore()
-  //     .collection(state.auth.email !== null ? state.auth.email : state.auth.uid)
-  //     .onSnapshot(res => {
-  //       if (res.size == 0) {
-  //         deviceListSet([]);
-  //       } else {
-  //         var devices: any = [];
-  //         res.forEach((device: any) => {
-  //           devices.push(device?._data);
-  //         });
-  //         deviceListSet(devices);
-  //       }
-  //     });
+  const onRefresh = React.useCallback(() => {
+    firestore()
+      .collection('devices')
+      .where(
+        'devOwner',
+        '==',
+        state.auth.email !== null ? state.auth.email : state.auth.uid,
+      )
+      .where('scene', '==', 'greenHouse')
+      .get()
+      .then((querySnapshot: any) => {
+        console.log('refresh query ===================', querySnapshot.docs);
 
-  //   return () => subscribe();
-  // }, []);
+        if (querySnapshot.size == 0) {
+          deviceListSet([]);
+        } else {
+          deviceListSet(querySnapshot.docs);
+        }
+      });
+  }, []);
 
   return (
     <Box
@@ -90,13 +92,16 @@ const GreenHouseScreen = ({navigation}: Nav) => {
         <FlatList
           showsVerticalScrollIndicator={false}
           data={deviceList}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           renderItem={({item}) => {
             // if (item.scene != 'greenHouse') statusSet(true);
 
             console.log(item._data);
 
             return (
-              <Box>
+              <Box key={item._data.id}>
                 {item._data.model == '5CH' ? (
                   <DeviceList
                     gardenName={item._data.gardenName}

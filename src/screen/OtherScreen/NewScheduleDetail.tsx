@@ -87,10 +87,6 @@ const NewScheduleDetail = ({navigation, route}: Nav) => {
     // const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     // console.log(timezone);
 
-    const date = new Date();
-    const offset = date.getTimezoneOffset();
-    console.log(offset * -1);
-
     var timeSplit = splitTime.split(':');
 
     cronSet(oldValue => {

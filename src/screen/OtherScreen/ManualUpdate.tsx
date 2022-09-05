@@ -1,9 +1,9 @@
 import {Box} from 'native-base';
 import React from 'react';
-import {WebView} from 'react-native-webview';
+// import {WebView} from 'react-native-webview';
 
 const ManualUpdate = () => {
-  return <WebView source={{uri: 'http://TestClient.local'}} />;
+  return <Box />;
 };
 
 export default ManualUpdate;

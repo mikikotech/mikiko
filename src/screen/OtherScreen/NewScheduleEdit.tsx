@@ -66,22 +66,40 @@ const NewScheduleEdit = ({navigation, route}: Nav) => {
   const _data: string = route?.params?._data;
   const _id: string = route?.params?._id;
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     var dataSplit = _data.split(':');
     var cronSplit = dataSplit[0].split(' ');
+
+    console.log('cron split ============', cronSplit);
 
     cronSet(dataSplit[0].split(' '));
     timeSet(`${cronSplit[2]}:${cronSplit[1]}`);
     outputSet(dataSplit[1]);
     stateSet(dataSplit[2]);
+    repeatSet(dataSplit[3]);
     if (cronSplit[3] == '*' && cronSplit[5] == '*') {
       everySelectSet('week');
-    } else if (cronSplit[5] != '*') {
-      everySelectSet('week');
+    } else {
+      console.log('not week');
+    }
+    if (cronSplit[5] != '*') {
+      // everySelectSet('week');
+      console.log('not everyday');
+
       everySet(cronSplit[5].split(','));
-    } else if (cronSplit[3] != '*') {
-      everySelectSet('months');
-      mounthSet(cronSplit[5].split(','));
+    }
+    if (cronSplit[5] == '*') {
+      // everySelectSet('week');
+
+      console.log('everyday');
+
+      everySet(() => {
+        return ['0', '1', '2', '3', '4', '5', '6'];
+      });
+    }
+    if (cronSplit[3] != '*') {
+      // everySelectSet('months');
+      mounthSet(cronSplit[3].split(','));
     }
     repeatSet(dataSplit[3]);
     statusSet(dataSplit[4] == '1' ? true : false);
@@ -92,12 +110,12 @@ const NewScheduleEdit = ({navigation, route}: Nav) => {
       .doc(id)
       .get()
       .then(res => {
-        console.log(res?.data()?.schedule);
+        console.log('data firebase ====== ', res?.data()?.schedule);
         if (res.exists) {
           scheduleListSet(res?.data()?.schedule);
         }
       });
-  }, [route, navigation]);
+  }, []);
 
   useLayoutEffect(() => {
     mqtt
@@ -122,11 +140,23 @@ const NewScheduleEdit = ({navigation, route}: Nav) => {
 
   const handleConfirm = time => {
     showSet(false);
-    var timesplit = time.toLocaleTimeString();
-    timesplit = timesplit.split('.');
-    // timesplit = timesplit[4].split(':');
+    var splitTime = time.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
-    timeSet(`${timesplit[0]}:${timesplit[1]}`);
+    var timeSplit = splitTime.split(':');
+
+    cronSet(oldValue => {
+      const copy = [...oldValue];
+
+      copy[1] = timeSplit[1];
+      copy[2] = timeSplit[0];
+
+      return copy;
+    });
+
+    timeSet(splitTime);
   };
 
   return (
@@ -521,36 +551,6 @@ const NewScheduleEdit = ({navigation, route}: Nav) => {
           </VStack>
         </HStack>
 
-        {/* repeat */}
-
-        {/* <HStack
-            py={3}
-            alignItems={'center'}
-            justifyContent="space-between"
-            borderBottomWidth={0.8}
-            borderBottomColor="gray.300">
-            <Text _light={{color: 'black'}} _dark={{color: FONT_INACTIVE_DARK}}>
-              Repeat
-            </Text>
-  
-            <Select
-              selectedValue={repeat}
-              minWidth="200"
-              accessibilityLabel="Choose Button"
-              placeholder="Choose Button"
-              _selectedItem={{
-                bg: 'teal.600',
-                endIcon: <CheckIcon size="5" />,
-              }}
-              mt={1}
-              onValueChange={val => {
-                repeatSet(val);
-              }}>
-              <Select.Item label={'once'} value="1" />
-              <Select.Item label={'repeat'} value="0" />
-            </Select>
-          </HStack> */}
-
         {/* status */}
 
         <HStack
@@ -569,20 +569,6 @@ const NewScheduleEdit = ({navigation, route}: Nav) => {
             onTrackColor={SECONDARY_COLOR}
           />
         </HStack>
-
-        {/* safasfas */}
-
-        <Button
-          onPress={() => {
-            // var cronString: string = cron.join(' ');
-            // var data = `${cronString}:${output}:${state}:${
-            //   status == true ? 1 : 0
-            // }`;
-            // console.log('schedule data', data);
-            console.log(every);
-          }}>
-          print schedule data
-        </Button>
 
         {/* button save */}
 
