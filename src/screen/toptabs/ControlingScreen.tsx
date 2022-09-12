@@ -212,6 +212,25 @@ const ControlingScreen = ({navigation, route}: Nav) => {
             size={10}
             color={PRIMARY_COLOR}
           />
+          <Text mt={1}>Auto</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => {
+            // navigation.navigate('Action', {
+            //   id: id,
+            //   switchName: switchName,
+            //   model: model,
+            // });
+            AndroidToast.toast('coming soon');
+          }}
+          justifyContent={'center'}
+          alignItems="center">
+          <Icon
+            as={MaterialCommunityIcons}
+            name="timer-settings-outline"
+            size={10}
+            color={PRIMARY_COLOR}
+          />
           <Text mt={1}>Loop Timer</Text>
         </Pressable>
         <Pressable

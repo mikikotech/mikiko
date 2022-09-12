@@ -93,7 +93,7 @@ const MonitoringScreen = ({route}) => {
             <MonitoringItem
               source={require('./../../assets/icons/ph.png')}
               name="PH"
-              data={ph}
+              data={Number(Number(ph).toFixed(2))}
               labelSurfix=" "
             />
             <MonitoringItem

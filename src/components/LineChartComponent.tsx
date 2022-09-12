@@ -25,25 +25,16 @@ interface Props {
   name: string;
   labelSurfix: string;
   data: number[];
-  labels?: any;
-  color?: string;
-  RGBAColor?: string;
+  labels: string[];
 }
 
-const LineChartComponent = ({
-  key,
-  name,
-  labelSurfix,
-  data,
-  labels,
-  color,
-  RGBAColor,
-}: Props) => {
+const LineChartComponent = ({key, name, labelSurfix, data, labels}: Props) => {
   const {colorMode} = useColorMode();
 
   return (
     <>
       <LineChart
+        key={key}
         data={{
           labels: labels,
           datasets: [

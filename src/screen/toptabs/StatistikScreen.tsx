@@ -1,5 +1,5 @@
 import {Text, Center, Box, ScrollView, Button, Checkbox} from 'native-base';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import database from '@react-native-firebase/database';
 import LineChartComponent from '../../components/LineChartComponent';
 import {
@@ -16,6 +16,7 @@ import XLSX from 'xlsx';
 import AndroidToast from '../../utils/AndroidToast';
 import {PermissionsAndroid} from 'react-native';
 import ModalAlert from '../../components/ModalAlert';
+import {LineChart} from 'react-native-chart-kit';
 var RNFS = require('react-native-fs');
 
 type dataProps = {
@@ -23,7 +24,7 @@ type dataProps = {
   soil: number;
   temp: number;
   ph: number;
-  time: string;
+  time: number;
 };
 
 const StatistikScreen = ({route}) => {
@@ -63,7 +64,7 @@ const StatistikScreen = ({route}) => {
     requestPermission();
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     database()
       .ref(`${id}/Sensor`)
       .limitToLast(8)
@@ -90,16 +91,71 @@ const StatistikScreen = ({route}) => {
             tempArray.push(dataArray[id].temp);
             soilArray.push(dataArray[id].soil);
             phArray.push(dataArray[id].ph);
-            timeArray.push(dataArray[id].time);
+
+            var epoch = dataArray[id].time * 1000;
+            timeArray.push(
+              new Date(epoch).toLocaleTimeString('en-GB', {
+                hour: '2-digit',
+                minute: '2-digit',
+              }),
+            );
             datalogging.push(dataArray[id]);
           }
 
-          datalogSet(datalogging);
-          setHumi(humiArray);
-          setTemp(tempArray);
-          setSoil(soilArray);
-          setPh(phArray);
-          timeSet(timeArray);
+          console.log(timeArray.reverse());
+
+          // datalogSet(datalogging);
+          setHumi(oldVal => {
+            const copy = [...oldVal];
+
+            humiArray.map((val, i) => {
+              copy[i] = val;
+            });
+
+            return copy;
+          });
+          setTemp(oldVal => {
+            const copy = [...oldVal];
+
+            tempArray.map((val, i) => {
+              copy[i] = val;
+            });
+
+            return copy;
+          });
+          setSoil(oldVal => {
+            const copy = [...oldVal];
+
+            soilArray.map((val, i) => {
+              copy[i] = val;
+            });
+
+            return copy;
+          });
+          setPh(oldVal => {
+            const copy = [...oldVal];
+
+            phArray.map((val, i) => {
+              copy[i] = val;
+            });
+
+            return copy;
+          });
+          timeSet(oldVal => {
+            const copy = [...oldVal];
+
+            timeArray.map((val, i) => {
+              copy[i] = val;
+            });
+
+            return copy;
+          });
+
+          // setHumi(humiArray);
+          // setTemp(tempArray);
+          // setSoil(soilArray);
+          // setPh(phArray);
+          // timeSet(timeArray);
         } else {
           canDownloadSet(false);
         }
@@ -146,41 +202,41 @@ const StatistikScreen = ({route}) => {
         alignItems={'center'}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <LineChartComponent
+            key={1}
             data={temp}
             labelSurfix="°C"
-            key={1}
             name="Temperature"
-            color="#ED1000"
-            RGBAColor="237, 16, 0"
+            // color="#ED1000"
+            // RGBAColor="237, 16, 0"
             labels={time}
           />
-          <LineChartComponent
-            data={humi}
-            labels={time}
-            labelSurfix="%"
+          {/* <LineChartComponent
             key={2}
-            name="Humidity"
-            color="#006FF4"
-            RGBAColor="0, 111, 244"
-          />
-          <LineChartComponent
-            data={ph}
-            labels={time}
-            labelSurfix=" "
-            key={3}
-            name="PH"
-            color="#2CCF16"
-            RGBAColor="44, 207, 22"
-          />
-          <LineChartComponent
-            data={soil}
-            labels={time}
+            data={humi}
             labelSurfix="%"
-            key={4}
+            name="Humidity"
+            // color="#ED1000"
+            // RGBAColor="237, 16, 0"
+            labels={time}
+          /> */}
+          {/* <LineChartComponent
+            key={3}
+            data={soil}
+            labelSurfix="%"
             name="Soil Moisture"
-            color="#F8B01E"
-            RGBAColor="248, 176, 30"
+            // color="#ED1000"
+            // RGBAColor="237, 16, 0"
+            labels={time}
           />
+          <LineChartComponent
+            key={4}
+            data={ph}
+            labelSurfix=" "
+            name="Soil PH"
+            // color="#ED1000"
+            // RGBAColor="237, 16, 0"
+            labels={time}
+          /> */}
           <Button
             variant={'unstyled'}
             width={'100%'}
@@ -211,7 +267,14 @@ const StatistikScreen = ({route}) => {
         message="Downloading data sensor"
         schema="check"
         onPress={() => {
-          exportDataToExcel();
+          // database()
+          //   .ref(`${id}/Sensor`)
+          //   .once('value')
+          //   .then(snapshot => {
+          //     console.log('User data: ', snapshot.val());
+          //   });
+
+          // exportDataToExcel();
           showSet(false);
         }}
         onCancel={() => {
