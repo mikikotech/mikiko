@@ -81,13 +81,13 @@ const MonitoringScreen = ({route}) => {
             <MonitoringItem
               source={require('./../../assets/icons/temp.png')}
               name="Temperature"
-              data={temp}
+              data={Number(Number(temp).toFixed(2))}
               labelSurfix="°C"
             />
             <MonitoringItem
               source={require('./../../assets/icons/hum.png')}
               name="Humidity"
-              data={humi}
+              data={Number(Number(humi).toFixed(2))}
               labelSurfix="%"
             />
             <MonitoringItem

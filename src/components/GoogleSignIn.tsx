@@ -79,7 +79,6 @@ const GoogleLogin = () => {
     await TuyaUser.loginByGoogle('62', idToken)
       .then(res => {
         console.log('tuya google login ====== ', res);
-
         TuyaHome.createHome(
           'mikikohome',
           lon,
